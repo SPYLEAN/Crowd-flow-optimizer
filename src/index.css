@@ -1,0 +1,152 @@
+@import "tailwindcss";
+
+/* ─── Design Tokens ─────────────────────────────────────────────────── */
+@layer base {
+  :root {
+    /* Surface hierarchy */
+    --surface-base:     #050810;
+    --surface-0:        #080c16;
+    --surface-1:        #0c1120;
+    --surface-2:        #111828;
+    --surface-3:        #182035;
+
+    /* Border */
+    --border-subtle:    rgba(255, 255, 255, 0.05);
+    --border-default:   rgba(255, 255, 255, 0.08);
+    --border-emphasis:  rgba(255, 255, 255, 0.14);
+
+    /* Accent — restrained teal, not neon */
+    --teal-dim:         #0d7c7c;
+    --teal-base:        #0ea5a5;
+    --teal-soft:        rgba(14, 165, 165, 0.12);
+    --teal-glow:        rgba(14, 165, 165, 0.06);
+
+    /* Status */
+    --status-safe:      #22c55e;
+    --status-safe-bg:   rgba(34, 197, 94, 0.08);
+    --status-caution:   #f59e0b;
+    --status-caution-bg: rgba(245, 158, 11, 0.08);
+    --status-critical:  #ef4444;
+    --status-critical-bg: rgba(239, 68, 68, 0.10);
+
+    /* Text */
+    --text-primary:     #f1f5f9;
+    --text-secondary:   #94a3b8;
+    --text-tertiary:    #475569;
+    --text-accent:      #0ea5a5;
+
+    /* Typography */
+    --font-sans:        'Inter', system-ui, -apple-system, sans-serif;
+    --font-mono:        'JetBrains Mono', 'Fira Code', monospace;
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--surface-base);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* Custom scrollbar — refined */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+
+  input[type="range"] { accent-color: var(--teal-base); }
+  select option { background: #111828; color: #f1f5f9; }
+}
+
+/* ─── Layout Utilities ──────────────────────────────────────────────── */
+@layer utilities {
+  /* Subtle dot-grid background */
+  .op-grid-bg,
+  .control-grid-bg {
+    background-image:
+      radial-gradient(circle, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  /* Glass panels */
+  .glass {
+    background: rgba(12, 17, 32, 0.72);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid var(--border-default);
+  }
+
+  .glass-teal {
+    background: rgba(12, 17, 32, 0.80);
+    backdrop-filter: blur(20px) saturate(200%);
+    -webkit-backdrop-filter: blur(20px) saturate(200%);
+    border: 1px solid rgba(14, 165, 165, 0.18);
+    box-shadow: 0 0 0 1px rgba(14, 165, 165, 0.04) inset,
+                0 8px 32px rgba(0, 0, 0, 0.4);
+  }
+
+  .glass-panel {
+    background: rgba(8, 12, 22, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-subtle);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04);
+  }
+
+  /* Status rings — muted, not neon */
+  .ring-safe    { box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.25); }
+  .ring-caution { box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.25); }
+  .ring-critical{ box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.25); }
+
+  /* Divider */
+  .divider { border-top: 1px solid var(--border-subtle); }
+
+  /* Mono label */
+  .label-mono {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+  }
+
+  /* Status badge */
+  .badge-safe     { background: var(--status-safe-bg);     color: var(--status-safe);     border: 1px solid rgba(34, 197, 94, 0.15); }
+  .badge-caution  { background: var(--status-caution-bg);  color: var(--status-caution);  border: 1px solid rgba(245, 158, 11, 0.15); }
+  .badge-critical { background: var(--status-critical-bg); color: var(--status-critical); border: 1px solid rgba(239, 68, 68, 0.15); }
+  .badge-teal     { background: var(--teal-soft);          color: var(--teal-base);        border: 1px solid rgba(14, 165, 165, 0.15); }
+
+  /* Pulse — very subtle */
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.4; }
+  }
+  .pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+
+  /* Fade in */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in { animation: fadeIn 0.35s ease-out forwards; }
+
+  /* Slide up for overlays */
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .slide-up { animation: slideUp 0.25s ease-out forwards; }
+}
