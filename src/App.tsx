@@ -37,8 +37,12 @@ export function App() {
     setIsJudgeDemoOpen(true);
   };
 
+  const layoutClass = activeTab === 'control_room'
+    ? "h-screen overflow-hidden"
+    : "min-h-screen";
+
   return (
-    <div className="h-screen overflow-hidden bg-[#07090e] text-slate-100 control-grid-bg flex flex-col font-sans">
+    <div className={`${layoutClass} bg-[#07090e] text-slate-100 control-grid-bg flex flex-col font-sans`}>
       {/* Top Navbar */}
       <Navbar
         activeTab={activeTab}
