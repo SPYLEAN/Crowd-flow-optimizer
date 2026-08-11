@@ -38,7 +38,7 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#07090e] text-slate-100 control-grid-bg flex flex-col font-sans">
+    <div className="h-screen overflow-hidden bg-[#07090e] text-slate-100 control-grid-bg flex flex-col font-sans">
       {/* Top Navbar */}
       <Navbar
         activeTab={activeTab}
@@ -93,8 +93,8 @@ export function App() {
       <footer className="border-t border-slate-900 bg-[#07090e]/90 text-slate-400 py-4 px-6 text-center text-xs font-mono">
         <div className="max-w-[1500px] mx-auto flex flex-wrap items-center justify-between gap-2">
           <div>
-            <strong className="text-white">CrowdFlow AI</strong>: Race Control for Human Movement
-            &bull; Tagline: <em>"Predict the crush point. Approve the safest move."</em>
+            <strong className="text-white">VenuePulse AI</strong>: Real-Time Crowd Intelligence & Rerouting Console
+            &bull; Tagline: <em>"Predict bottlenecks. Reroute safely. Keep venues moving."</em>
           </div>
           <div className="text-slate-400">
             ⚠️ <span className="text-amber-400 font-bold">Safety Disclaimer:</span> Decision-support system for trained venue operators. All sensor data is simulated.

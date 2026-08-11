@@ -32,8 +32,9 @@ export const VenueMapCanvas: React.FC<VenueMapCanvasProps> = ({
   const [selectedZone, setSelectedZone] = useState<Zone | null>(null);
 
   // Map Pan & Zoom Interactive Controls
-  const [zoomLevel, setZoomLevel] = useState<number>(1.0);
-  const [panOffset, setPanOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const zoomLevelRef = useRef<number>(1.0);
+  const panOffsetRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [zoomDisplay, setZoomDisplay] = useState<number>(1.0); // For UI buttons only
   const isDraggingRef = useRef(false);
   const dragStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
@@ -51,8 +52,9 @@ export const VenueMapCanvas: React.FC<VenueMapCanvasProps> = ({
 
   // Reset Pan/Zoom on scenario change
   useEffect(() => {
-    setZoomLevel(1.0);
-    setPanOffset({ x: 0, y: 0 });
+    zoomLevelRef.current = 1.0;
+    panOffsetRef.current = { x: 0, y: 0 };
+    setZoomDisplay(1.0);
   }, [state.presetId]);
 
   useEffect(() => {
@@ -167,8 +169,10 @@ export const VenueMapCanvas: React.FC<VenueMapCanvasProps> = ({
 
       // Coordinate Transform Function
       const mapToCanvas = (gx: number, gy: number) => {
-        const cx = (gx - dataCenterX) * autoFitScale * zoomLevel + containerCenterX + panOffset.x;
-        const cy = (gy - dataCenterY) * autoFitScale * zoomLevel + containerCenterY + panOffset.y;
+        const currentZoom = zoomLevelRef.current;
+        const currentPan = panOffsetRef.current;
+        const cx = (gx - dataCenterX) * autoFitScale * currentZoom + containerCenterX + currentPan.x;
+        const cy = (gy - dataCenterY) * autoFitScale * currentZoom + containerCenterY + currentPan.y;
         return { x: cx, y: cy };
       };
 
@@ -194,7 +198,8 @@ export const VenueMapCanvas: React.FC<VenueMapCanvasProps> = ({
         zonesList.forEach((zone) => {
           const pt = mapToCanvas(zone.x, zone.y);
           const density = zone.density || 1.5;
-          const radius = Math.min(160, Math.sqrt(zone.area_m2) * 3.2 * autoFitScale * zoomLevel);
+          const currentZoom = zoomLevelRef.current;
+          const radius = Math.min(160, Math.sqrt(zone.area_m2) * 3.2 * autoFitScale * currentZoom);
           const gradient = ctx.createRadialGradient(pt.x, pt.y, 6, pt.x, pt.y, radius);
 
           if (density >= zone.critical_density) {
@@ -319,7 +324,7 @@ export const VenueMapCanvas: React.FC<VenueMapCanvasProps> = ({
         const isHighlighted = highlightZoneId === zone.zone_id;
 
         const baseRadius = Math.max(16, Math.min(26, Math.sqrt(zone.area_m2) * 0.9));
-        const nodeRadius = baseRadius * Math.sqrt(zoomLevel);
+        const nodeRadius = baseRadius * Math.sqrt(zoomLevelRef.current);
 
         ctx.beginPath();
         ctx.arc(pt.x, pt.y, nodeRadius, 0, Math.PI * 2);
@@ -384,14 +389,37 @@ export const VenueMapCanvas: React.FC<VenueMapCanvasProps> = ({
 
     return () => {
       cancelAnimationFrame(animationFrameId);
-      resizeObserver.disconnect();
     };
-  }, [state, layerFlags, highlightZoneId, zoomLevel, panOffset]);
+  }, [state, layerFlags, highlightZoneId]); // removed zoomLevel and panOffset from dependencies
 
-  // ── MOUSE INTERACTION & DRAG PANNING ──
+  // Helper to update zoom globally
+  const updateZoom = (delta: number, isAbsolute: boolean = false) => {
+    let newZoom = isAbsolute ? delta : zoomLevelRef.current + delta;
+    newZoom = Math.max(0.7, Math.min(2.5, Number(newZoom.toFixed(2))));
+    zoomLevelRef.current = newZoom;
+    setZoomDisplay(newZoom);
+  };
+
+  // Native non-passive wheel listener to zoom map and prevent page scroll ONLY when hovering map canvas
+  useEffect(() => {
+    const canvasElement = canvasRef.current;
+    if (!canvasElement) return;
+
+    const handleWheelNative = (e: WheelEvent) => {
+      e.preventDefault(); // Prevents page from scrolling when zooming over the map canvas!
+      const delta = e.deltaY < 0 ? 0.1 : -0.1;
+      updateZoom(delta);
+    };
+
+    canvasElement.addEventListener('wheel', handleWheelNative, { passive: false });
+    return () => {
+      canvasElement.removeEventListener('wheel', handleWheelNative);
+    };
+  }, []);
+
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     isDraggingRef.current = true;
-    dragStartRef.current = { x: e.clientX - panOffset.x, y: e.clientY - panOffset.y };
+    dragStartRef.current = { x: e.clientX - panOffsetRef.current.x, y: e.clientY - panOffsetRef.current.y };
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -399,10 +427,10 @@ export const VenueMapCanvas: React.FC<VenueMapCanvasProps> = ({
     if (!container) return;
 
     if (isDraggingRef.current) {
-      setPanOffset({
+      panOffsetRef.current = {
         x: e.clientX - dragStartRef.current.x,
         y: e.clientY - dragStartRef.current.y,
-      });
+      };
       return;
     }
 
@@ -431,8 +459,10 @@ export const VenueMapCanvas: React.FC<VenueMapCanvasProps> = ({
 
     let found: Zone | null = null;
     zonesList.forEach((z) => {
-      const cx = (z.x - dataCenterX) * autoFitScale * zoomLevel + width / 2 + panOffset.x;
-      const cy = (z.y - dataCenterY) * autoFitScale * zoomLevel + height / 2 + panOffset.y;
+      const currentZoom = zoomLevelRef.current;
+      const currentPan = panOffsetRef.current;
+      const cx = (z.x - dataCenterX) * autoFitScale * currentZoom + width / 2 + currentPan.x;
+      const cy = (z.y - dataCenterY) * autoFitScale * currentZoom + height / 2 + currentPan.y;
       const dist = Math.hypot(cx - mx, cy - my);
       if (dist <= 32) found = z;
     });
@@ -447,7 +477,7 @@ export const VenueMapCanvas: React.FC<VenueMapCanvasProps> = ({
   const handleWheel = (e: React.WheelEvent<HTMLCanvasElement>) => {
     e.preventDefault();
     const delta = e.deltaY < 0 ? 0.1 : -0.1;
-    setZoomLevel((prev) => Math.max(0.7, Math.min(2.5, Number((prev + delta).toFixed(2)))));
+    updateZoom(delta);
   };
 
   const handleClick = () => {
@@ -458,8 +488,8 @@ export const VenueMapCanvas: React.FC<VenueMapCanvasProps> = ({
   };
 
   const resetView = () => {
-    setZoomLevel(1.0);
-    setPanOffset({ x: 0, y: 0 });
+    updateZoom(1.0, true);
+    panOffsetRef.current = { x: 0, y: 0 };
   };
 
   return (
@@ -482,15 +512,15 @@ export const VenueMapCanvas: React.FC<VenueMapCanvasProps> = ({
           {/* Zoom & Pan Controls Bar */}
           <div className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-mono" style={{ background: 'rgba(6,10,20,0.92)', backdropFilter: 'blur(12px)', border: '1px solid var(--border-subtle)' }}>
             <button
-              onClick={() => setZoomLevel((z) => Math.min(2.5, Number((z + 0.2).toFixed(1))))}
+              onClick={() => updateZoom(0.2)}
               title="Zoom In"
               className="p-1 rounded text-slate-300 hover:text-white hover:bg-white/10 transition-colors"
             >
               <ZoomIn className="w-3.5 h-3.5" />
             </button>
-            <span className="text-[10px] font-bold text-teal-400 px-1">{Math.round(zoomLevel * 100)}%</span>
+            <span className="text-[10px] font-bold text-teal-400 px-1">{Math.round(zoomDisplay * 100)}%</span>
             <button
-              onClick={() => setZoomLevel((z) => Math.max(0.7, Number((z - 0.2).toFixed(1))))}
+              onClick={() => updateZoom(-0.2)}
               title="Zoom Out"
               className="p-1 rounded text-slate-300 hover:text-white hover:bg-white/10 transition-colors"
             >

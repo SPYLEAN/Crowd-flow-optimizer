@@ -81,7 +81,7 @@ export const DataReadinessView: React.FC<DataReadinessViewProps> = ({ selectedPr
       <div className="glass-panel rounded-xl p-5 flex flex-col">
         <div className="flex items-center gap-2 pb-3 mb-4" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
           <Activity className="w-4 h-4" style={{ color: 'var(--teal-base)' }} />
-          <h3 className="font-semibold text-white text-sm">CrowdFlow Data Pipeline Architecture</h3>
+          <h3 className="font-semibold text-white text-sm">VenuePulse Data Pipeline Architecture</h3>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
           {[

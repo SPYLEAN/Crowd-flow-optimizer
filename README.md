@@ -1,9 +1,9 @@
-# CrowdFlow AI 🏟️
-### *Race Control for Human Movement*
+# VenuePulse AI 🏟️
+### *Real-Time Crowd Intelligence & Rerouting Console*
 
-> **"Predict the crush point. Approve the safest move."**
+> **"Predict bottlenecks. Reroute safely. Keep venues moving."**
 
-CrowdFlow AI is an operator-facing crowd operations intelligence platform that models venues as live digital twins, predicts dangerous bottlenecks before they occur, and surfaces operator-approved rerouting strategies in real-time.
+VenuePulse AI is an operator-facing crowd operations intelligence platform that models venues as live digital twins, predicts dangerous bottlenecks before they occur, and surfaces operator-approved rerouting strategies in real-time.
 
 ---
 
@@ -124,7 +124,7 @@ All requests are proxied from frontend port 5173 → backend port 3001.
 
 ## Safety Notice
 
-> CrowdFlow AI is a **decision-support platform** for trained venue operations personnel. All sensor readings, crowd counts, and risk scores shown are derived from simulated demo data. This system does not replace professional crowd safety assessment or the authority of qualified safety officers.
+> VenuePulse AI is a **decision-support platform** for trained venue operations personnel. All sensor readings, crowd counts, and risk scores shown are derived from simulated demo data. This system does not replace professional crowd safety assessment or the authority of qualified safety officers.
 
 ---
 

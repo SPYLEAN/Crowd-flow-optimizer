@@ -89,7 +89,7 @@ export const JudgeDemoOverlay: React.FC<JudgeDemoOverlayProps> = ({
       title: 'Predictive Bottleneck Forecast',
       eventDescription: 'Throughput degradation applied to simulation model.',
       systemCalculation: 'Forecast calculation: 8 minutes until critical breach.',
-      script: 'CrowdFlow AI forecasts that Gate C will breach safe density in 8 minutes before critical overcrowding occurs.',
+      script: 'VenuePulse AI forecasts that Gate C will breach safe density in 8 minutes before critical overcrowding occurs.',
       judgeNotice: 'The system is predictive, moving beyond reactive heatmaps.',
       action: () => {
         setSimulationState((prev) => ({

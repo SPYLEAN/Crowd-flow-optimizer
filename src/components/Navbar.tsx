@@ -48,7 +48,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <Radio className="w-3.5 h-3.5" style={{ color: 'var(--teal-base)' }} />
             </div>
             <div className="flex items-baseline gap-2">
-              <span className="text-sm font-semibold tracking-tight text-white">CrowdFlow</span>
+              <span className="text-sm font-semibold tracking-tight text-white">VenuePulse</span>
               <span className="text-sm font-semibold tracking-tight" style={{ color: 'var(--teal-base)' }}>GeoOps</span>
               <span className="hidden sm:block text-xs font-medium px-1.5 py-0.5 rounded" style={{ background: 'var(--teal-soft)', color: 'var(--teal-base)', border: '1px solid rgba(14,165,165,0.15)', fontFamily: 'var(--font-mono)' }}>
                 Console
@@ -144,7 +144,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             <div className="space-y-3">
               <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-                CrowdFlow AI uses <code className="px-1 py-0.5 rounded text-xs" style={{ fontFamily: 'var(--font-mono)', background: 'var(--surface-3)', color: 'var(--teal-base)' }}>facebook/bart-large-mnli</code> for zero-shot classification of ground staff incident reports.
+                VenuePulse AI uses <code className="px-1 py-0.5 rounded text-xs" style={{ fontFamily: 'var(--font-mono)', background: 'var(--surface-3)', color: 'var(--teal-base)' }}>facebook/bart-large-mnli</code> for zero-shot classification of ground staff incident reports.
               </p>
               <p className="text-xs leading-relaxed font-semibold" style={{ color: 'var(--status-safe)' }}>
                 The Hugging Face API token is now securely managed by the Node.js backend via environment variables. It is no longer exposed to the frontend.

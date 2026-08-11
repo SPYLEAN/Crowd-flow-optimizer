@@ -46,7 +46,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           </h1>
           
           <p className="text-lg md:text-xl text-slate-400 leading-relaxed max-w-2xl font-light">
-            CrowdFlow AI predicts bottlenecks, explains risk, and recommends operator-approved reroutes before crowd pressure becomes dangerous.
+            VenuePulse AI predicts bottlenecks, explains risk, and recommends operator-approved reroutes before crowd pressure becomes dangerous.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
@@ -87,7 +87,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         <section className="space-y-12">
           <div className="text-center space-y-4 max-w-2xl mx-auto">
             <h2 className="text-3xl font-bold text-white tracking-tight">Not just another heatmap.</h2>
-            <p className="text-slate-400">Why CrowdFlow AI is different from generic "map + red zones" solutions.</p>
+            <p className="text-slate-400">Why VenuePulse AI is different from generic "map + red zones" solutions.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -115,7 +115,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               </div>
             </div>
 
-            {/* CrowdFlow AI */}
+            {/* VenuePulse AI */}
             <div className="p-8 rounded-2xl bg-teal-900/10 border border-teal-500/20 space-y-6 relative overflow-hidden group shadow-[0_0_30px_rgba(45,212,191,0.03)]">
               <div className="absolute inset-0 bg-gradient-to-b from-teal-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div className="relative z-10">
@@ -211,7 +211,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             <div className="space-y-1">
               <h4 className="text-sm font-semibold text-amber-500 tracking-wide uppercase">Decision-Support Notice</h4>
               <p className="text-sm text-slate-400 leading-relaxed">
-                CrowdFlow AI is a decision-support platform designed to assist trained venue operations personnel. All sensor readings, crowd counts, and risk scores shown are derived from simulated demo data. This system does not replace professional crowd safety assessment or the authority of qualified safety officers.
+                VenuePulse AI is a decision-support platform designed to assist trained venue operations personnel. All sensor readings, crowd counts, and risk scores shown are derived from simulated demo data. This system does not replace professional crowd safety assessment or the authority of qualified safety officers.
               </p>
             </div>
           </div>
