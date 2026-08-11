@@ -15,13 +15,14 @@ interface ControlRoomViewProps {
   setSimulationState: React.Dispatch<React.SetStateAction<SimulationState>>;
   onResetSimulation: () => void;
   onNlpStatusChange: (status: 'connected' | 'fallback' | 'unknown') => void;
+  nlpStatus: 'connected' | 'fallback' | 'unknown';
 }
 
 export const ControlRoomView: React.FC<ControlRoomViewProps> = ({
   simulationState,
   setSimulationState,
-  onResetSimulation,
   onNlpStatusChange,
+  nlpStatus,
 }) => {
   const [highlightZoneId, setHighlightZoneId] = useState<string | null>(null);
   const [realTime, setRealTime] = useState(new Date());
@@ -176,9 +177,9 @@ export const ControlRoomView: React.FC<ControlRoomViewProps> = ({
             <span>DATA FRESHNESS: 100%</span>
           </div>
 
-          <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-teal-500/10 text-teal-300 border border-teal-500/20 text-[10px] font-bold">
-            <Cpu className="w-3 h-3 text-teal-400" />
-            <span>NLP INFERENCE: ACTIVE</span>
+          <div className={`flex items-center gap-1.5 px-2 py-1 rounded border text-[10px] font-bold ${nlpStatus === 'fallback' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' : 'bg-teal-500/10 text-teal-300 border-teal-500/20'}`}>
+            <Cpu className={`w-3 h-3 ${nlpStatus === 'fallback' ? 'text-amber-400' : 'text-teal-400'}`} />
+            <span>NLP INFERENCE: {nlpStatus === 'fallback' ? 'LOCAL FALLBACK' : 'HF ACTIVE'}</span>
           </div>
 
           <span className="text-slate-300 font-bold">{currentTime}</span>

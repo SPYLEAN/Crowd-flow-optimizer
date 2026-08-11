@@ -70,6 +70,7 @@ export function App() {
             setSimulationState={setSimulationState}
             onResetSimulation={handleResetSimulation}
             onNlpStatusChange={setNlpStatus}
+            nlpStatus={nlpStatus}
           />
         )}
 

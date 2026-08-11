@@ -12,7 +12,7 @@ interface IncidentClassifierPanelProps {
 }
 
 const SAMPLE_REPORTS = [
-  { text: 'QR scanning is slow at Gate C', zone: 'gate_c' },
+  { text: 'Large spill at Gate C, the floor is slick and crowds are backing up fast.', zone: 'gate_c' },
   { text: 'Medical team needs clear lane near south exit', zone: 'south_exit' },
 ];
 
@@ -21,7 +21,7 @@ export const IncidentClassifierPanel: React.FC<IncidentClassifierPanelProps> = (
   dataReadinessScore = 94,
   onNlpStatusChange,
 }) => {
-  const [reportText, setReportText] = useState('QR scanning is slow at Gate C');
+  const [reportText, setReportText] = useState('Large spill at Gate C, the floor is slick and crowds are backing up fast.');
   const [targetZone, setTargetZone] = useState('gate_c');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<ClassificationResult | null>(null);

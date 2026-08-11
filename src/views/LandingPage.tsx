@@ -42,7 +42,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           
           <h1 className="text-5xl md:text-7xl font-extrabold text-white tracking-tight leading-[1.05] drop-shadow-2xl">
             Operations Control for <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-teal-100 to-teal-500">Human Movement.</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-teal-100 to-teal-500">Crowd Safety.</span>
           </h1>
           
           <p className="text-lg md:text-xl text-slate-400 leading-relaxed max-w-2xl font-light">

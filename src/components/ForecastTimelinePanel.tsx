@@ -127,8 +127,10 @@ export const ForecastTimelinePanel: React.FC<ForecastTimelinePanelProps> = ({
           <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
           <span className="truncate">
             {state.forecastBreachTimeMins
-              ? `Gate C Breach predicted in ~${state.forecastBreachTimeMins} mins`
-              : 'Nominal flow — No breach predicted'}
+              ? `Gate C breach predicted in ~${state.forecastBreachTimeMins} mins`
+              : activeAction 
+                ? `Breach avoided — ${activeAction.action} active`
+                : 'Nominal flow — No breach predicted'}
           </span>
         </div>
 
@@ -145,7 +147,7 @@ export const ForecastTimelinePanel: React.FC<ForecastTimelinePanelProps> = ({
           <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
           <span className="truncate">
             {activeAction
-              ? `Active: ${activeAction.action} (${activeAction.risk_before} → ${activeAction.risk_after} risk)`
+              ? `Active reroute: ${activeAction.action}`
               : 'No active reroute interventions'}
           </span>
         </div>

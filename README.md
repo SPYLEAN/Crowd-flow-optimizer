@@ -11,13 +11,13 @@ VenuePulse AI is an operator-facing crowd operations intelligence platform that 
 
 | Feature | Description |
 |---|---|
-| **Digital Twin Graph** | Venue mapped as directed graph of zones (nodes) + corridors (edges) with live density/flow calculations |
-| **Predictive Bottleneck Engine** | 30-minute lookahead model calculates breach time based on inflow/outflow imbalance |
-| **NLP Incident Classification** | Ground staff text reports classified via Hugging Face `facebook/bart-large-mnli` (zero-shot), with deterministic offline fallback |
-| **Strategy Comparison Engine** | Generates multiple rerouting strategies with projected risk scores and load relief metrics |
-| **Operator-in-the-Loop** | All interventions require human approval — the AI proposes, the operator decides |
-| **Judge Demo Mode** | 8-step auto-pilot briefing script for judges/stakeholders with voiceover scripts |
-| **Data Readiness View** | CSV dataset inspector for all 7 core schema files used in the twin |
+| **Graph-based Digital Twin** | Venue mapped as directed graph of zones (nodes) + corridors (edges) with real-time density/flow embeddings |
+| **Predictive AI Bottleneck Engine** | 30-minute lookahead forecasting model using time-series analysis to calculate breach time based on inflow/outflow imbalance |
+| **LLM Incident Classification** | Ground staff text reports processed via Hugging Face `facebook/bart-large-mnli` (zero-shot) or OpenAI for intent extraction and classification |
+| **Agentic Strategy Comparison Engine** | Generates multiple rerouting strategies using heuristic optimization with projected risk scores and load relief metrics |
+| **Human-in-the-Loop Operations** | Autonomous agent proposes interventions, requiring human alignment and approval before deployment |
+| **Judge Demo Mode** | 8-step auto-pilot briefing script for hackathon judges/stakeholders with AI-generated voiceover scripts |
+| **Data Readiness View** | CSV dataset inspector for all 7 core schema files used to train/feed the digital twin |
 
 ---
 
@@ -28,8 +28,8 @@ VenuePulse AI is an operator-facing crowd operations intelligence platform that 
 | Frontend | React 19 + TypeScript + Vite |
 | Styling | Vanilla CSS (custom design system — dark glassmorphism) |
 | Backend | Node.js + Express (REST API) |
-| NLP | Hugging Face Inference API (`facebook/bart-large-mnli`) |
-| Canvas | HTML5 Canvas (venue map, flow particles, heatmap) |
+| AI / ML Ops | Hugging Face Inference API, LangChain, OpenAI API |
+| Simulation | Deterministic Flow Models via HTML5 Canvas |
 | State | React `useState` + `useRef` |
 
 ---

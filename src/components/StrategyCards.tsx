@@ -144,6 +144,20 @@ export const StrategyCards: React.FC<StrategyCardsProps> = ({
             );
           })}
         </div>
+        
+        {/* Audit Log */}
+        {activeActions.length > 0 && (
+          <div className="mt-4 pt-3 border-t border-white/10 shrink-0">
+            <h3 className="text-[10px] font-bold text-white uppercase tracking-wider mb-2" style={{ color: 'var(--text-secondary)' }}>System Audit Log</h3>
+            <div className="space-y-1.5 max-h-24 overflow-y-auto custom-scrollbar pr-1">
+              {activeActions.map(action => (
+                <div key={action.id} className="text-[10px] font-mono leading-tight px-2 py-1.5 rounded" style={{ background: 'var(--surface-base)', borderLeft: '2px solid var(--status-safe)', color: 'var(--text-primary)' }}>
+                  <span className="text-slate-500">{action.time}</span> <span className="text-slate-600">·</span> <span style={{ color: 'var(--status-safe)' }}>Reroute approved</span> <span className="text-slate-600">·</span> <span className="text-white">{action.action}</span> <span className="text-slate-600">·</span> <span className="text-slate-400">Risk {action.risk_before} &rarr; {action.risk_after}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
