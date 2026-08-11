@@ -1,4 +1,4 @@
-# VenuePulse AI 🏟️
+# VenuePulse AI 
 ### *Real-Time Crowd Intelligence & Rerouting Console*
 
 > **"Predict bottlenecks. Reroute safely. Keep venues moving."**
