@@ -160,11 +160,11 @@ export const JudgeDemoOverlay: React.FC<JudgeDemoOverlayProps> = ({
     },
     {
       step: 8,
-      title: 'Resolution Verified',
-      eventDescription: 'Bottleneck mitigated before critical density.',
-      systemCalculation: 'Simulation returns to nominal operations.',
-      script: 'So the core value is simple: we help venue operators act before crowd pressure becomes dangerous. We are not only detecting congestion; we are simulating interventions.',
-      judgeNotice: 'The system serves as a complete command, control, and strategy platform.',
+      title: 'Reroute Stabilized',
+      eventDescription: 'Critical breach avoided. Residual crowd pressure remains under active monitoring.',
+      systemCalculation: 'Risk reduced 81 → 56. Controlled reroute active: Gate B Relief Loop.',
+      script: 'The system does not claim zero risk. It reduces the situation from critical to controlled, giving operators time to manage the crowd safely.',
+      judgeNotice: 'The system serves as a decision-support safety platform — reducing risk and providing operational control, not eliminating danger.',
       action: () => {},
     },
   ];

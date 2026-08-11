@@ -9,12 +9,12 @@ interface TelemetryPanelProps {
 export const TelemetryPanel: React.FC<TelemetryPanelProps> = ({ state }) => {
   const riskLevel =
     state.overallVenueRisk > 75 ? 'critical' :
-    state.overallVenueRisk > 50 ? 'caution' : 'safe';
+    state.overallVenueRisk > 50 ? 'controlled' : 'safe';
 
   const riskStyles = {
-    critical: { bg: 'var(--status-critical-bg)', border: 'rgba(239,68,68,0.3)', color: 'var(--status-critical)' },
-    caution:  { bg: 'var(--status-caution-bg)',  border: 'rgba(245,158,11,0.3)',  color: 'var(--status-caution)' },
-    safe:     { bg: 'var(--status-safe-bg)',     border: 'rgba(34,197,94,0.3)',   color: 'var(--status-safe)' },
+    critical:   { bg: 'var(--status-critical-bg)', border: 'rgba(239,68,68,0.3)',   color: 'var(--status-critical)' },
+    controlled: { bg: 'var(--status-caution-bg)',  border: 'rgba(245,158,11,0.3)',  color: 'var(--status-caution)' },
+    safe:       { bg: 'var(--status-safe-bg)',     border: 'rgba(34,197,94,0.3)',   color: 'var(--status-safe)' },
   }[riskLevel];
 
   const sortedZones = Object.values(state.zones).sort((a, b) => (b.density || 0) - (a.density || 0));

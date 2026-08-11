@@ -121,7 +121,7 @@ export const ForecastTimelinePanel: React.FC<ForecastTimelinePanelProps> = ({
             {state.forecastBreachTimeMins
               ? `Gate C breach in ~${state.forecastBreachTimeMins} mins`
               : activeAction 
-                ? `Breach avoided — ${activeAction.action}`
+                ? `Breach avoided — Gate B Relief Loop active`
                 : 'Nominal Flow'}
           </span>
         </div>
@@ -139,7 +139,7 @@ export const ForecastTimelinePanel: React.FC<ForecastTimelinePanelProps> = ({
           <ShieldCheck className="w-3 h-3 text-emerald-500 shrink-0" />
           <span className="truncate">
             {activeAction
-              ? `Active: ${activeAction.action}`
+              ? `Controlled reroute active: ${activeAction.action}`
               : 'No active reroute interventions'}
           </span>
         </div>
