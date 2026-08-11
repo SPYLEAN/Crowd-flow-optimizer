@@ -14,11 +14,14 @@ interface ControlRoomViewProps {
   simulationState: SimulationState;
   setSimulationState: React.Dispatch<React.SetStateAction<SimulationState>>;
   onResetSimulation: () => void;
+  onNlpStatusChange: (status: 'connected' | 'fallback' | 'unknown') => void;
 }
 
 export const ControlRoomView: React.FC<ControlRoomViewProps> = ({
   simulationState,
   setSimulationState,
+  onResetSimulation,
+  onNlpStatusChange,
 }) => {
   const [highlightZoneId, setHighlightZoneId] = useState<string | null>(null);
   const [realTime, setRealTime] = useState(new Date());
@@ -241,6 +244,7 @@ export const ControlRoomView: React.FC<ControlRoomViewProps> = ({
               onAddIncident={handleAddIncident}
               selectedZoneId={highlightZoneId || 'gate_c'}
               dataReadinessScore={94}
+              onNlpStatusChange={onNlpStatusChange}
             />
           </div>
         </div>

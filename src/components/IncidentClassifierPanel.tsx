@@ -8,6 +8,7 @@ interface IncidentClassifierPanelProps {
   onAddIncident: (incident: IncidentReport) => void;
   selectedZoneId?: string;
   dataReadinessScore: number;
+  onNlpStatusChange?: (status: 'connected' | 'fallback' | 'unknown') => void;
 }
 
 const SAMPLE_REPORTS = [
@@ -18,6 +19,7 @@ const SAMPLE_REPORTS = [
 export const IncidentClassifierPanel: React.FC<IncidentClassifierPanelProps> = ({
   onAddIncident,
   dataReadinessScore = 94,
+  onNlpStatusChange,
 }) => {
   const [reportText, setReportText] = useState('QR scanning is slow at Gate C');
   const [targetZone, setTargetZone] = useState('gate_c');
@@ -31,8 +33,14 @@ export const IncidentClassifierPanel: React.FC<IncidentClassifierPanelProps> = (
     try {
       const res = await classifyIncidentReport(text);
       setResult(res);
+      if (onNlpStatusChange) {
+        onNlpStatusChange(res.source === 'huggingface' || res.source === 'huggingface_api' ? 'connected' : 'fallback');
+      }
     } catch (e) {
       console.error(e);
+      if (onNlpStatusChange) {
+        onNlpStatusChange('fallback');
+      }
     } finally {
       setIsAnalyzing(false);
     }

@@ -173,7 +173,7 @@ export const SimulationControlsPanel: React.FC<SimulationControlsPanelProps> = (
         
         <div className="space-y-2.5">
           {[
-            { name: 'MapLibre Vector Engine', status: 'Active', type: 'GPU Rendered' },
+            { name: 'Geospatial Simulation Engine', status: 'Active', type: 'GPU Rendered' },
             { name: 'Density Risk Scorer', status: 'Running', type: 'Heuristic p/m²' },
             { name: 'Zero-Shot NLP Classifier', status: 'Active', type: 'BART-Large-MNLI' },
             { name: '30-Min Bottleneck Predictor', status: 'Active', type: '30-min Lookahead' },

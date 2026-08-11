@@ -19,6 +19,7 @@ export function App() {
   );
 
   const [isJudgeDemoOpen, setIsJudgeDemoOpen] = useState<boolean>(false);
+  const [nlpStatus, setNlpStatus] = useState<'connected' | 'fallback' | 'unknown'>('unknown');
 
   const handleSelectPreset = (presetId: string) => {
     setSelectedPresetId(presetId);
@@ -50,6 +51,7 @@ export function App() {
         selectedPresetId={selectedPresetId}
         onSelectPreset={handleSelectPreset}
         onStartJudgeDemo={handleStartJudgeDemo}
+        nlpStatus={nlpStatus}
       />
 
       {/* Main Content Area */}
@@ -67,6 +69,7 @@ export function App() {
             simulationState={simulationState}
             setSimulationState={setSimulationState}
             onResetSimulation={handleResetSimulation}
+            onNlpStatusChange={setNlpStatus}
           />
         )}
 

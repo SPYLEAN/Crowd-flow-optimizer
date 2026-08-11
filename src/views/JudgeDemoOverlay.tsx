@@ -42,14 +42,14 @@ export const JudgeDemoOverlay: React.FC<JudgeDemoOverlayProps> = ({
         setSimulationState((prev) => ({
           ...prev,
           criticalZoneId: 'gate_c',
-          overallVenueRisk: 78,
+          overallVenueRisk: 81,
           zones: {
             ...prev.zones,
             gate_c: {
               ...prev.zones.gate_c,
               occupants: 2538,
               density: 5.4,
-              risk_score: 84,
+              risk_score: 81,
               queue: 480,
             },
           },
@@ -59,12 +59,12 @@ export const JudgeDemoOverlay: React.FC<JudgeDemoOverlayProps> = ({
     {
       step: 3,
       title: 'NLP Incident Classification',
-      eventDescription: 'Ground staff text: "QR scanning is slow at Gate C"',
-      systemCalculation: 'Hugging Face API classifies as "ticketing obstruction".',
-      script: 'A ground staff member reports: "QR scanning is slow at Gate C". Using NLP, our system classifies this as a ticketing obstruction. That updates the graph because Gate C\'s throughput dropped.',
+      eventDescription: 'Ground staff text: "Large spill at Gate C, the floor is slick and crowds are backing up fast."',
+      systemCalculation: 'Hugging Face API classifies as "safety hazard".',
+      script: 'A ground staff member reports: "Large spill at Gate C...". Using NLP, our system classifies this as a safety hazard. That updates the graph because Gate C\'s throughput dropped.',
       judgeNotice: 'Unstructured text is instantly converted into structured simulation data.',
       action: async () => {
-        const res = await classifyIncidentReport('QR scanning is slow at Gate C');
+        const res = await classifyIncidentReport('Large spill at Gate C, the floor is slick and crowds are backing up fast.');
         setSimulationState((prev) => ({
           ...prev,
           activeIncidents: [
@@ -72,7 +72,7 @@ export const JudgeDemoOverlay: React.FC<JudgeDemoOverlayProps> = ({
               id: 'inc-demo-1',
               time: '19:48',
               zone: 'gate_c',
-              report_text: 'QR scanning is slow at Gate C',
+              report_text: 'Large spill at Gate C, the floor is slick and crowds are backing up fast.',
               classified_label: res.label,
               confidence: res.confidence,
               short_reason: res.short_reason,
@@ -120,7 +120,7 @@ export const JudgeDemoOverlay: React.FC<JudgeDemoOverlayProps> = ({
         if (strat) {
           const newAction: OperatorAction = {
             id: `act-demo-${Date.now()}`,
-            time: '19:52',
+            time: '19:53',
             action: strat.title,
             zone: 'gate_c',
             strategy_id: strat.id,
@@ -142,7 +142,7 @@ export const JudgeDemoOverlay: React.FC<JudgeDemoOverlayProps> = ({
             },
             zones: {
               ...prev.zones,
-              gate_c: { ...prev.zones.gate_c, density: 3.4, risk_score: 52, queue: 120 },
+              gate_c: { ...prev.zones.gate_c, density: 3.4, risk_score: 56, queue: 120 },
             },
             activeActions: [newAction, ...prev.activeActions],
           }));
@@ -210,8 +210,8 @@ export const JudgeDemoOverlay: React.FC<JudgeDemoOverlayProps> = ({
   };
 
   return (
-    <div className="fixed inset-x-0 bottom-6 z-50 max-w-5xl mx-auto px-4 fade-in">
-      <div className="glass-panel rounded-xl p-6 shadow-2xl relative overflow-hidden" style={{ border: '1px solid var(--border-emphasis)' }}>
+    <div className="fixed right-6 top-24 bottom-6 w-[400px] z-50 fade-in flex flex-col">
+      <div className="glass-panel rounded-xl p-6 shadow-2xl relative overflow-hidden flex-1 flex flex-col" style={{ border: '1px solid var(--border-emphasis)' }}>
         {/* Subtle Success Pulse overlay if step 7 or 8 */}
         {(currentStep === 7 || currentStep === 8) && (
           <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle at top, rgba(34,197,94,0.05), transparent 70%)' }} />
@@ -262,10 +262,10 @@ export const JudgeDemoOverlay: React.FC<JudgeDemoOverlayProps> = ({
         </div>
 
         {/* Content Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mt-5 relative z-10">
+        <div className="flex flex-col gap-6 items-stretch mt-5 relative z-10 flex-1 overflow-y-auto pr-2">
           
-          {/* Left Column: System Status & Briefing Script */}
-          <div className="lg:col-span-8 space-y-4">
+          {/* Top Block: System Status & Briefing Script */}
+          <div className="space-y-4">
             
             {/* Title & Status Row */}
             <div className="flex items-start gap-4">
@@ -301,8 +301,8 @@ export const JudgeDemoOverlay: React.FC<JudgeDemoOverlayProps> = ({
 
           </div>
 
-          {/* Right Column: Sequence Navigation */}
-          <div className="lg:col-span-4 flex flex-col gap-3">
+          {/* Bottom Block: Sequence Navigation */}
+          <div className="flex flex-col gap-3 shrink-0 pt-4" style={{ borderTop: '1px solid var(--border-subtle)' }}>
             <div className="label-mono flex items-center justify-between pb-2" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
               <span>Sequence Control</span>
               <span>8 Steps</span>

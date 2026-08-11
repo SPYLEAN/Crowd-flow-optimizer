@@ -41,7 +41,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           </div>
           
           <h1 className="text-5xl md:text-7xl font-extrabold text-white tracking-tight leading-[1.05] drop-shadow-2xl">
-            Race Control for <br />
+            Operations Control for <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-teal-100 to-teal-500">Human Movement.</span>
           </h1>
           
@@ -62,7 +62,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl text-sm font-medium text-white bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-md transition-all"
             >
               <Play className="w-4 h-4" />
-              Run Judge Demo
+              Start Control-Room Simulation
             </button>
           </div>
 

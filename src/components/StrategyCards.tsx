@@ -136,7 +136,7 @@ export const StrategyCards: React.FC<StrategyCardsProps> = ({
                       style={strat.is_recommended ? { background: 'var(--teal-dim)', color: 'white' } : { background: 'var(--surface-base)', color: 'var(--text-secondary)' }}
                     >
                       <Target className="w-3 h-3" />
-                      Approve Intervention
+                      Approve Reroute
                     </button>
                   )}
                 </div>

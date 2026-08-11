@@ -112,7 +112,7 @@ export const VenueMapCanvas: React.FC<VenueMapCanvasProps> = ({
 
       ctx.clearRect(0, 0, width, height);
 
-      // ── 1. MAPLIBRE GIS BASE BACKGROUND ──
+      // ── 1. GEOSPATIAL SIMULATION ENGINE BASE BACKGROUND ──
       ctx.fillStyle = '#060a14';
       ctx.fillRect(0, 0, width, height);
 
@@ -138,7 +138,7 @@ export const VenueMapCanvas: React.FC<VenueMapCanvasProps> = ({
       ctx.font = '500 8.5px "JetBrains Mono", monospace';
       ctx.fillText('18.9912° N', 12, 16);
       ctx.fillText('72.8241° E', width - 65, 16);
-      ctx.fillText('GEOSPATIAL TWIN ENGINE v2.4 — MAPLIBRE VECTOR BASE', 12, height - 12);
+      ctx.fillText('GEOSPATIAL TWIN ENGINE v2.4 — MAPLIBRE-INSPIRED DIGITAL TWIN', 12, height - 12);
 
       // ── 2. AUTO-FIT BOUNDING BOX COMPUTATION (Fixes clipping!) ──
       const zonesList = Object.values(state.zones);
@@ -500,7 +500,7 @@ export const VenueMapCanvas: React.FC<VenueMapCanvasProps> = ({
         <div className="px-3 py-1.5 rounded-lg flex items-center gap-2.5 pointer-events-auto" style={{ background: 'rgba(6,10,20,0.92)', backdropFilter: 'blur(12px)', border: '1px solid var(--border-subtle)' }}>
           <div className="w-2 h-2 rounded-full pulse-dot bg-teal-400" />
           <span className="text-[10px] font-bold text-white tracking-widest uppercase font-mono">
-            MAPLIBRE GEOOPS DIGITAL TWIN
+            GEOSPATIAL SIMULATION ENGINE
           </span>
           <span className="text-[10px] font-mono text-slate-400 border-l border-white/10 pl-2">
             {Object.keys(state.zones).length} Zones · {Object.keys(state.corridors).length} Corridors

@@ -16,6 +16,7 @@ interface NavbarProps {
   selectedPresetId: string;
   onSelectPreset: (presetId: string) => void;
   onStartJudgeDemo: () => void;
+  nlpStatus: 'connected' | 'fallback' | 'unknown';
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -24,6 +25,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   selectedPresetId,
   onSelectPreset,
   onStartJudgeDemo,
+  nlpStatus,
 }) => {
   const [showHfModal, setShowHfModal] = useState(false);
 
@@ -108,13 +110,15 @@ export const Navbar: React.FC<NavbarProps> = ({
               title="NLP Configuration Info"
               className="flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-all"
               style={{
-                background: 'rgba(34,197,94,0.06)',
-                border: '1px solid rgba(34,197,94,0.15)',
-                color: 'var(--status-safe)',
+                background: nlpStatus === 'fallback' ? 'rgba(245,158,11,0.06)' : 'rgba(34,197,94,0.06)',
+                border: nlpStatus === 'fallback' ? '1px solid rgba(245,158,11,0.15)' : '1px solid rgba(34,197,94,0.15)',
+                color: nlpStatus === 'fallback' ? 'var(--status-caution)' : 'var(--status-safe)',
               }}
             >
               <Key className="w-3 h-3" />
-              <span className="hidden sm:block">NLP Info</span>
+              <span className="hidden sm:block">
+                {nlpStatus === 'fallback' ? 'Local NLP Fallback Active' : 'HF Connected'}
+              </span>
             </button>
 
             {/* Demo Mode */}
@@ -128,7 +132,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               }}
             >
               <Play className="w-3.5 h-3.5 fill-current" />
-              Run Demo
+              Start Control-Room Simulation
             </button>
           </div>
         </div>
