@@ -29,88 +29,92 @@ export const TelemetryPanel: React.FC<TelemetryPanelProps> = ({ state }) => {
   const modelConfidence = state.activeIncidents.length > 0 ? 94 : 98;
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+    <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
 
       {/* 1. People on site */}
-      <div className="glass-panel rounded-xl p-3 flex flex-col justify-between">
-        <div className="flex items-center justify-between mb-1">
-          <p className="label-mono">People on Site</p>
-          <Users className="w-3.5 h-3.5 opacity-50" />
+      <div className="glass-panel rounded-xl p-2 px-3 flex items-center justify-between">
+        <div>
+          <div className="flex items-center gap-1.5 mb-0.5">
+            <Users className="w-3.5 h-3.5 opacity-50" />
+            <p className="label-mono">People on Site</p>
+          </div>
+          <p className="text-[9px]" style={{ color: 'var(--text-tertiary)' }}>Total venue occupancy</p>
         </div>
-        <div className="flex items-baseline gap-1">
-          <span className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-mono)' }}>
-            {totalOccupants.toLocaleString()}
-          </span>
-        </div>
-        <p className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>Total venue occupancy</p>
+        <span className="text-xl font-bold text-white" style={{ fontFamily: 'var(--font-mono)' }}>
+          {totalOccupants.toLocaleString()}
+        </span>
       </div>
 
       {/* 2. Risk Index */}
       <div
-        className="rounded-xl p-3 flex flex-col justify-between transition-colors"
+        className="rounded-xl p-2 px-3 flex items-center justify-between transition-colors"
         style={{ background: riskStyles.bg, border: `1px solid ${riskStyles.border}` }}
       >
-        <div className="flex items-center justify-between mb-1">
-          <p className="label-mono" style={{ color: riskStyles.color }}>Risk Index</p>
-          <AlertTriangle className="w-3.5 h-3.5" style={{ color: riskStyles.color }} />
+        <div>
+          <div className="flex items-center gap-1.5 mb-0.5">
+            <AlertTriangle className="w-3.5 h-3.5" style={{ color: riskStyles.color }} />
+            <p className="label-mono" style={{ color: riskStyles.color }}>Risk Index</p>
+          </div>
+          <p className="text-[9px] uppercase font-bold" style={{ color: riskStyles.color }}>
+            {riskLevel}
+          </p>
         </div>
-        <div className="flex items-baseline gap-1">
-          <span className="text-2xl font-bold" style={{ color: riskStyles.color, fontFamily: 'var(--font-mono)' }}>
+        <div className="flex items-baseline gap-0.5">
+          <span className="text-xl font-bold" style={{ color: riskStyles.color, fontFamily: 'var(--font-mono)' }}>
             {state.overallVenueRisk}
           </span>
-          <span className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>/100</span>
+          <span className="text-[9px]" style={{ color: 'var(--text-tertiary)' }}>/100</span>
         </div>
-        <p className="text-[10px] uppercase font-bold" style={{ color: riskStyles.color }}>
-          {riskLevel}
-        </p>
       </div>
 
       {/* 3. Peak Zone Density */}
-      <div className="glass-panel rounded-xl p-3 flex flex-col justify-between">
-        <div className="flex items-center justify-between mb-1">
-          <p className="label-mono">Peak Zone Density</p>
-          <Activity className="w-3.5 h-3.5 opacity-50" />
+      <div className="glass-panel rounded-xl p-2 px-3 flex items-center justify-between">
+        <div>
+          <div className="flex items-center gap-1.5 mb-0.5">
+            <Activity className="w-3.5 h-3.5 opacity-50" />
+            <p className="label-mono">Peak Density</p>
+          </div>
+          <p className="text-[9px] truncate text-white">{peakZone ? peakZone.name : 'N/A'}</p>
         </div>
         {peakZone && (
-          <>
-            <div className="flex items-baseline gap-1">
-              <span className="text-2xl font-bold" style={{ color: 'var(--status-critical)', fontFamily: 'var(--font-mono)' }}>
-                {peakZone.density}
-              </span>
-              <span className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>p/m²</span>
-            </div>
-            <p className="text-[10px] truncate text-white">{peakZone.name}</p>
-          </>
+          <div className="flex items-baseline gap-0.5">
+            <span className="text-xl font-bold" style={{ color: 'var(--status-critical)', fontFamily: 'var(--font-mono)' }}>
+              {peakZone.density}
+            </span>
+            <span className="text-[9px]" style={{ color: 'var(--text-tertiary)' }}>p/m²</span>
+          </div>
         )}
       </div>
 
       {/* 4. Model Confidence */}
-      <div className="glass-panel rounded-xl p-3 flex flex-col justify-between">
-        <div className="flex items-center justify-between mb-1">
-          <p className="label-mono">Model Confidence</p>
-          <ShieldCheck className="w-3.5 h-3.5 opacity-50" />
+      <div className="glass-panel rounded-xl p-2 px-3 flex items-center justify-between">
+        <div>
+          <div className="flex items-center gap-1.5 mb-0.5">
+            <ShieldCheck className="w-3.5 h-3.5 opacity-50" />
+            <p className="label-mono">Confidence</p>
+          </div>
+          <p className="text-[9px]" style={{ color: 'var(--text-tertiary)' }}>Graph inference</p>
         </div>
-        <div className="flex items-baseline gap-1">
-          <span className="text-2xl font-bold" style={{ color: 'var(--status-safe)', fontFamily: 'var(--font-mono)' }}>
-            {modelConfidence}%
-          </span>
-        </div>
-        <p className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>Graph inference accuracy</p>
+        <span className="text-xl font-bold" style={{ color: 'var(--status-safe)', fontFamily: 'var(--font-mono)' }}>
+          {modelConfidence}%
+        </span>
       </div>
 
       {/* 5. Clearance Rate */}
-      <div className="glass-panel rounded-xl p-3 flex flex-col justify-between">
-        <div className="flex items-center justify-between mb-1">
-          <p className="label-mono">Clearance Rate</p>
-          <Gauge className="w-3.5 h-3.5 opacity-50" />
+      <div className="glass-panel rounded-xl p-2 px-3 flex items-center justify-between">
+        <div>
+          <div className="flex items-center gap-1.5 mb-0.5">
+            <Gauge className="w-3.5 h-3.5 opacity-50" />
+            <p className="label-mono">Clearance</p>
+          </div>
+          <p className="text-[9px]" style={{ color: 'var(--text-tertiary)' }}>Est. time to empty</p>
         </div>
-        <div className="flex items-baseline gap-1">
-          <span className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-mono)' }}>
+        <div className="flex items-baseline gap-0.5">
+          <span className="text-xl font-bold text-white" style={{ fontFamily: 'var(--font-mono)' }}>
             ~{clearanceRate}
           </span>
-          <span className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>mins</span>
+          <span className="text-[9px]" style={{ color: 'var(--text-tertiary)' }}>mins</span>
         </div>
-        <p className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>Est. time to empty</p>
       </div>
 
     </div>

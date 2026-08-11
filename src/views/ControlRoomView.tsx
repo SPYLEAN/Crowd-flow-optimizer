@@ -151,7 +151,7 @@ export const ControlRoomView: React.FC<ControlRoomViewProps> = ({
   const currentTime = realTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
   return (
-    <div className="flex flex-col h-full bg-[var(--surface-base)] fade-in pb-4 overflow-hidden">
+    <div className="flex flex-col h-full bg-[var(--surface-base)] fade-in pb-4 overflow-y-auto">
       
       {/* ── 1. COMMAND BAR HEADER ── */}
       <div className="px-5 py-2.5 flex items-center justify-between shrink-0 bg-[#060a14] border-b border-white/5">
