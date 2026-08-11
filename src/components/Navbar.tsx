@@ -45,7 +45,16 @@ export const Navbar: React.FC<NavbarProps> = ({
             className="flex items-center gap-3 shrink-0 group"
           >
             <div className="w-7 h-7 rounded-md flex items-center justify-center" style={{ background: 'var(--teal-soft)', border: '1px solid rgba(14,165,165,0.2)' }}>
-              <Radio className="w-3.5 h-3.5" style={{ color: 'var(--teal-base)' }} />
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" className="w-4 h-4">
+                <path d="M32 4C17.64 4 6 15.64 6 30C6 48.2 32 60 32 60C32 60 58 48.2 58 30C58 15.64 46.36 4 32 4Z" fill="url(#navGrad1)"/>
+                <path d="M16 28 L24 28 L28 18 L36 42 L40 28 L48 28" stroke="#ffffff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+                <defs>
+                  <linearGradient id="navGrad1" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#0f766e" />
+                    <stop offset="1" stopColor="#2dd4bf" />
+                  </linearGradient>
+                </defs>
+              </svg>
             </div>
             <div className="flex items-baseline gap-2">
               <span className="text-sm font-semibold tracking-tight text-white">VenuePulse</span>
