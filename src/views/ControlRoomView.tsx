@@ -21,6 +21,13 @@ export const ControlRoomView: React.FC<ControlRoomViewProps> = ({
   setSimulationState,
 }) => {
   const [highlightZoneId, setHighlightZoneId] = useState<string | null>(null);
+  const [realTime, setRealTime] = useState(new Date());
+
+  // Live updating clock
+  useEffect(() => {
+    const timer = setInterval(() => setRealTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
   
   // Use a ref to hold latest state so the interval doesn't become stale
   const stateRef = React.useRef(simulationState);
@@ -141,7 +148,7 @@ export const ControlRoomView: React.FC<ControlRoomViewProps> = ({
   };
 
   const venueName = PRESETS[simulationState.presetId]?.name || 'Venue Setup';
-  const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const currentTime = realTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
   return (
     <div className="flex flex-col h-full bg-[var(--surface-base)] fade-in pb-4 overflow-hidden">
@@ -183,10 +190,10 @@ export const ControlRoomView: React.FC<ControlRoomViewProps> = ({
         </div>
 
         {/* ── 3. MAIN GEOSPATIAL GRID (Left Kepler, Center MapLibre, Right Decision Queue) ── */}
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4 min-h-[500px]">
+        <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4 min-h-0">
           
           {/* Left Panel: Kepler Layer & Scenario Controls */}
-          <div className="lg:col-span-3 min-h-0">
+          <div className="lg:col-span-3 min-h-0 overflow-y-auto rounded-xl">
             <SimulationControlsPanel
               state={simulationState}
               onUpdatePhase={handleUpdatePhase}
@@ -207,7 +214,7 @@ export const ControlRoomView: React.FC<ControlRoomViewProps> = ({
           </div>
 
           {/* Right Panel: Decision Queue & Reroute Strategies */}
-          <div className="lg:col-span-3 min-h-0">
+          <div className="lg:col-span-3 min-h-0 overflow-y-auto rounded-xl">
             <StrategyCards
               strategies={simulationState.strategies}
               currentVenueRisk={simulationState.overallVenueRisk}

@@ -493,7 +493,7 @@ export const VenueMapCanvas: React.FC<VenueMapCanvasProps> = ({
   };
 
   return (
-    <div ref={containerRef} className="relative glass-panel rounded-xl overflow-hidden shadow-2xl h-full min-h-[480px]" style={{ border: '1px solid var(--border-subtle)' }}>
+    <div ref={containerRef} className="relative glass-panel rounded-xl overflow-hidden shadow-2xl h-full min-h-[300px]" style={{ border: '1px solid var(--border-subtle)' }}>
       
       {/* ── TOP MAP BANNERS ── */}
       <div className="absolute top-3 left-3 right-3 z-10 flex items-center justify-between pointer-events-none">
