@@ -210,91 +210,83 @@ export const JudgeDemoOverlay: React.FC<JudgeDemoOverlayProps> = ({
   };
 
   return (
-    <div className="fixed right-6 top-24 bottom-6 w-[400px] z-50 fade-in flex flex-col">
-      <div className="glass-panel rounded-xl p-6 shadow-2xl relative overflow-hidden flex-1 flex flex-col" style={{ border: '1px solid var(--border-emphasis)' }}>
+    <div className="fixed right-4 top-20 bottom-4 w-[420px] z-50 fade-in flex flex-col">
+      <div className="bg-[#020308] rounded p-4 shadow-2xl relative overflow-hidden flex-1 flex flex-col border border-teal-500/20">
         {/* Subtle Success Pulse overlay if step 7 or 8 */}
         {(currentStep === 7 || currentStep === 8) && (
-          <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle at top, rgba(34,197,94,0.05), transparent 70%)' }} />
+          <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle at top, rgba(34,197,94,0.03), transparent 70%)' }} />
         )}
 
         {/* Progress Bar */}
-        <div className="absolute top-0 left-0 right-0 h-1.5 bg-slate-800">
+        <div className="absolute top-0 left-0 right-0 h-1 bg-black">
           <div
-            className="h-full transition-all duration-700 ease-in-out relative"
-            style={{ width: `${(currentStep / STEPS.length) * 100}%`, background: 'var(--teal-base)' }}
-          >
-            <div className="absolute top-0 right-0 bottom-0 w-20 bg-gradient-to-r from-transparent to-white opacity-30" />
-          </div>
+            className="h-full transition-all duration-700 ease-in-out relative bg-teal-500"
+            style={{ width: `${(currentStep / STEPS.length) * 100}%` }}
+          />
         </div>
 
         {/* Top Overlay Header */}
-        <div className="flex items-center justify-between pb-4 pt-1" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-          <div className="flex items-center gap-4">
-            <div className="px-2.5 py-1 rounded text-[10px] uppercase font-bold flex items-center gap-2 tracking-widest" style={{ background: 'var(--teal-soft)', color: 'var(--teal-base)', border: '1px solid rgba(14,165,165,0.2)', fontFamily: 'var(--font-mono)' }}>
-              <Activity className="w-3.5 h-3.5" /> BRIEFING SCRIPT MODE
+        <div className="flex items-center justify-between pb-3 pt-2 border-b border-white/10">
+          <div className="flex items-center gap-3">
+            <div className="px-2 py-1 rounded text-[9px] uppercase font-bold flex items-center gap-1.5 tracking-widest bg-teal-500/10 text-teal-400 border border-teal-500/20 font-mono">
+              <Activity className="w-3 h-3" /> BRIEFING SCRIPT
             </div>
-            <span className="text-sm font-semibold text-white tracking-wide">
-              Sequence {currentStep} / {STEPS.length}
+            <span className="text-xs font-bold text-white tracking-wide font-mono">
+              Seq {currentStep}/{STEPS.length}
             </span>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <button
               onClick={() => setIsAutoPlaying(!isAutoPlaying)}
-              className="px-4 py-2 rounded-lg text-xs font-semibold transition-colors flex items-center gap-2 uppercase tracking-wide"
-              style={{
-                fontFamily: 'var(--font-mono)',
-                background: isAutoPlaying ? 'var(--surface-3)' : 'var(--teal-dim)',
-                color: isAutoPlaying ? 'var(--text-secondary)' : 'white',
-                border: isAutoPlaying ? '1px solid var(--border-default)' : '1px solid var(--teal-base)',
-              }}
+              className={`px-3 py-1.5 rounded text-[10px] font-bold transition-colors flex items-center gap-1.5 uppercase tracking-wide font-mono border ${isAutoPlaying ? 'bg-black text-slate-400 border-white/10 hover:bg-white/5' : 'bg-teal-500/20 text-teal-400 border-teal-500/30 hover:bg-teal-500/30'}`}
             >
-              {isAutoPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-              {isAutoPlaying ? 'Pause Briefing' : 'Resume Briefing'}
+              {isAutoPlaying ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
+              {isAutoPlaying ? 'Pause' : 'Resume'}
             </button>
             <button
               onClick={onClose}
-              className="p-2 rounded-lg text-slate-500 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+              className="p-1.5 rounded text-slate-500 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
         </div>
 
         {/* Content Layout */}
-        <div className="flex flex-col gap-6 items-stretch mt-5 relative z-10 flex-1 overflow-y-auto pr-2">
+        <div className="flex flex-col gap-4 items-stretch mt-4 relative z-10 flex-1 overflow-y-auto pr-2 custom-scrollbar">
           
           {/* Top Block: System Status & Briefing Script */}
           <div className="space-y-4">
             
             {/* Title & Status Row */}
-            <div className="flex items-start gap-4">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ background: 'var(--surface-3)', border: '1px solid var(--teal-base)' }}>
-                {currentStep >= 7 ? <CheckCircle className="w-4 h-4" style={{ color: 'var(--status-safe)' }} /> : <span className="text-sm font-bold" style={{ color: 'var(--teal-base)', fontFamily: 'var(--font-mono)' }}>{currentStep}</span>}
+            <div className="flex items-start gap-3">
+              <div className="w-6 h-6 rounded flex items-center justify-center shrink-0 bg-teal-500/10 border border-teal-500/30">
+                {currentStep >= 7 ? <CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> : <span className="text-xs font-bold text-teal-400 font-mono">{currentStep}</span>}
               </div>
-              <div className="space-y-1 mt-0.5">
-                <h3 className="text-lg font-bold text-white tracking-tight">
+              <div className="space-y-1.5 mt-0.5">
+                <h3 className="text-base font-bold text-white tracking-tight leading-tight">
                   {currentStepData.title}
                 </h3>
-                <div className="flex items-center gap-4 text-[11px]" style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>
-                  <span className="flex items-center gap-1.5"><Radio className="w-3.5 h-3.5" /> {currentStepData.eventDescription}</span>
-                  <span className="flex items-center gap-1.5"><Cpu className="w-3.5 h-3.5" /> {currentStepData.systemCalculation}</span>
+                <div className="flex flex-col gap-1 text-[10px] font-mono text-slate-400">
+                  <span className="flex items-center gap-1.5"><Radio className="w-3 h-3 text-slate-500" /> {currentStepData.eventDescription}</span>
+                  <span className="flex items-center gap-1.5"><Cpu className="w-3 h-3 text-slate-500" /> {currentStepData.systemCalculation}</span>
                 </div>
               </div>
             </div>
 
             {/* Presenter Script Block */}
-            <div className="rounded-xl p-4 text-sm leading-relaxed relative" style={{ background: 'rgba(5,8,16,0.6)', border: '1px solid var(--border-subtle)', borderLeft: '3px solid var(--teal-base)', color: 'var(--text-primary)' }}>
-              <div className="absolute -top-3 left-3 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider" style={{ background: 'var(--teal-dim)', color: 'white', fontFamily: 'var(--font-mono)' }}>
-                <div className="flex items-center gap-1.5"><Volume2 className="w-3 h-3" /> Voiceover Script</div>
+            <div className="rounded p-3 text-sm leading-relaxed relative bg-black/40 border border-white/5 border-l-2 border-l-teal-500">
+              <div className="absolute -top-2.5 left-2 px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-widest bg-teal-500/20 text-teal-400 border border-teal-500/30 font-mono flex items-center gap-1">
+                <Volume2 className="w-2.5 h-2.5" /> Script
               </div>
-              <span className="italic mt-1 block">"{currentStepData.script}"</span>
+              <span className="italic mt-1 block text-slate-300">"{currentStepData.script}"</span>
             </div>
             
             {/* Judge Notice Block */}
-            <div className="rounded-xl p-3 text-xs leading-relaxed" style={{ background: 'rgba(245,158,11,0.05)', border: '1px solid rgba(245,158,11,0.2)', color: 'var(--text-secondary)' }}>
-               <div className="flex items-center gap-1.5 mb-1 text-[10px] uppercase font-bold tracking-wider" style={{ color: 'var(--status-caution)', fontFamily: 'var(--font-mono)' }}>
-                  <Eye className="w-3.5 h-3.5" /> What judges should notice
+            <div className="rounded p-2.5 text-xs leading-relaxed bg-amber-500/5 border border-amber-500/10 text-slate-400">
+               <div className="flex items-center gap-1.5 mb-1 text-[9px] uppercase font-bold tracking-wider text-amber-500 font-mono">
+                  <Eye className="w-3 h-3" /> Focus Area
                </div>
                {currentStepData.judgeNotice}
             </div>
@@ -302,12 +294,11 @@ export const JudgeDemoOverlay: React.FC<JudgeDemoOverlayProps> = ({
           </div>
 
           {/* Bottom Block: Sequence Navigation */}
-          <div className="flex flex-col gap-3 shrink-0 pt-4" style={{ borderTop: '1px solid var(--border-subtle)' }}>
-            <div className="label-mono flex items-center justify-between pb-2" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-              <span>Sequence Control</span>
-              <span>8 Steps</span>
+          <div className="flex flex-col gap-2 shrink-0 pt-3 border-t border-white/10 mt-auto">
+            <div className="text-[9px] font-bold font-mono text-slate-500 uppercase tracking-widest pb-1 border-b border-white/5">
+              Sequence Navigator
             </div>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-1.5">
               {STEPS.map((s) => {
                 const isPast = currentStep > s.step;
                 const isCurrent = currentStep === s.step;
@@ -316,12 +307,7 @@ export const JudgeDemoOverlay: React.FC<JudgeDemoOverlayProps> = ({
                   <button
                     key={s.step}
                     onClick={() => handleManualStep(s.step)}
-                    className="px-3 py-2 rounded flex items-center justify-between text-[10px] font-semibold transition-all font-mono uppercase"
-                    style={{
-                      background: isCurrent ? 'var(--teal-dim)' : isPast ? 'rgba(255,255,255,0.03)' : 'var(--surface-2)',
-                      color: isCurrent ? 'white' : isPast ? 'var(--text-secondary)' : 'var(--text-tertiary)',
-                      border: `1px solid ${isCurrent ? 'var(--teal-base)' : 'var(--border-subtle)'}`
-                    }}
+                    className={`px-2 py-1.5 rounded flex items-center justify-between text-[9px] font-bold transition-all font-mono uppercase border ${isCurrent ? 'bg-teal-500/10 text-teal-400 border-teal-500/30' : isPast ? 'bg-white/5 text-slate-400 border-transparent hover:bg-white/10' : 'bg-transparent text-slate-600 border-transparent hover:bg-white/5'}`}
                   >
                     <span>Step {s.step}</span>
                     {isPast && <CheckCircle className="w-3 h-3 opacity-50" />}

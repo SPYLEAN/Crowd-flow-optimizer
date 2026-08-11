@@ -32,7 +32,7 @@ export const TelemetryPanel: React.FC<TelemetryPanelProps> = ({ state }) => {
     <div className="grid grid-cols-2 lg:grid-cols-5 gap-2">
 
       {/* 1. People on site */}
-      <div className="glass-panel rounded-xl p-2 px-3 flex items-center justify-between">
+      <div className="glass-panel rounded p-1.5 px-2 flex items-center justify-between">
         <div>
           <div className="flex items-center gap-1.5 mb-0.5">
             <Users className="w-3.5 h-3.5 opacity-50" />
@@ -40,15 +40,15 @@ export const TelemetryPanel: React.FC<TelemetryPanelProps> = ({ state }) => {
           </div>
           <p className="text-[9px]" style={{ color: 'var(--text-tertiary)' }}>Total venue occupancy</p>
         </div>
-        <span className="text-xl font-bold text-white" style={{ fontFamily: 'var(--font-mono)' }}>
+        <span className="text-lg font-bold text-white" style={{ fontFamily: 'var(--font-mono)' }}>
           {totalOccupants.toLocaleString()}
         </span>
       </div>
 
       {/* 2. Risk Index */}
       <div
-        className="rounded-xl p-2 px-3 flex items-center justify-between transition-colors"
-        style={{ background: riskStyles.bg, border: `1px solid ${riskStyles.border}` }}
+        className="glass-panel rounded p-1.5 px-2 flex items-center justify-between"
+        style={{ borderLeft: `2px solid ${riskStyles.color}` }}
       >
         <div>
           <div className="flex items-center gap-1.5 mb-0.5">
@@ -60,7 +60,7 @@ export const TelemetryPanel: React.FC<TelemetryPanelProps> = ({ state }) => {
           </p>
         </div>
         <div className="flex items-baseline gap-0.5">
-          <span className="text-xl font-bold" style={{ color: riskStyles.color, fontFamily: 'var(--font-mono)' }}>
+          <span className="text-lg font-bold" style={{ color: riskStyles.color, fontFamily: 'var(--font-mono)' }}>
             {state.overallVenueRisk}
           </span>
           <span className="text-[9px]" style={{ color: 'var(--text-tertiary)' }}>/100</span>
@@ -68,8 +68,8 @@ export const TelemetryPanel: React.FC<TelemetryPanelProps> = ({ state }) => {
       </div>
 
       {/* 3. Peak Zone Density */}
-      <div className="glass-panel rounded-xl p-2 px-3 flex items-center justify-between">
-        <div>
+      <div className="glass-panel rounded p-1.5 px-2 flex items-center justify-between">
+        <div className="max-w-[60%]">
           <div className="flex items-center gap-1.5 mb-0.5">
             <Activity className="w-3.5 h-3.5 opacity-50" />
             <p className="label-mono">Peak Density</p>
@@ -78,7 +78,7 @@ export const TelemetryPanel: React.FC<TelemetryPanelProps> = ({ state }) => {
         </div>
         {peakZone && (
           <div className="flex items-baseline gap-0.5">
-            <span className="text-xl font-bold" style={{ color: 'var(--status-critical)', fontFamily: 'var(--font-mono)' }}>
+            <span className="text-lg font-bold" style={{ color: 'var(--status-critical)', fontFamily: 'var(--font-mono)' }}>
               {peakZone.density}
             </span>
             <span className="text-[9px]" style={{ color: 'var(--text-tertiary)' }}>p/m²</span>
@@ -87,7 +87,7 @@ export const TelemetryPanel: React.FC<TelemetryPanelProps> = ({ state }) => {
       </div>
 
       {/* 4. Model Confidence */}
-      <div className="glass-panel rounded-xl p-2 px-3 flex items-center justify-between">
+      <div className="glass-panel rounded p-1.5 px-2 flex items-center justify-between">
         <div>
           <div className="flex items-center gap-1.5 mb-0.5">
             <ShieldCheck className="w-3.5 h-3.5 opacity-50" />
@@ -95,13 +95,13 @@ export const TelemetryPanel: React.FC<TelemetryPanelProps> = ({ state }) => {
           </div>
           <p className="text-[9px]" style={{ color: 'var(--text-tertiary)' }}>Graph inference</p>
         </div>
-        <span className="text-xl font-bold" style={{ color: 'var(--status-safe)', fontFamily: 'var(--font-mono)' }}>
+        <span className="text-lg font-bold" style={{ color: 'var(--status-safe)', fontFamily: 'var(--font-mono)' }}>
           {modelConfidence}%
         </span>
       </div>
 
       {/* 5. Clearance Rate */}
-      <div className="glass-panel rounded-xl p-2 px-3 flex items-center justify-between">
+      <div className="glass-panel rounded p-1.5 px-2 flex items-center justify-between">
         <div>
           <div className="flex items-center gap-1.5 mb-0.5">
             <Gauge className="w-3.5 h-3.5 opacity-50" />
@@ -110,7 +110,7 @@ export const TelemetryPanel: React.FC<TelemetryPanelProps> = ({ state }) => {
           <p className="text-[9px]" style={{ color: 'var(--text-tertiary)' }}>Est. time to empty</p>
         </div>
         <div className="flex items-baseline gap-0.5">
-          <span className="text-xl font-bold text-white" style={{ fontFamily: 'var(--font-mono)' }}>
+          <span className="text-lg font-bold text-white" style={{ fontFamily: 'var(--font-mono)' }}>
             ~{clearanceRate}
           </span>
           <span className="text-[9px]" style={{ color: 'var(--text-tertiary)' }}>mins</span>

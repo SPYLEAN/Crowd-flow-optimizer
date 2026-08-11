@@ -76,39 +76,26 @@
   .op-grid-bg,
   .control-grid-bg {
     background-image:
-      radial-gradient(circle, rgba(255,255,255,0.025) 1px, transparent 1px);
-    background-size: 28px 28px;
+      radial-gradient(circle, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 24px 24px;
   }
 
-  /* Glass panels */
+  /* Flat glass panels - no excessive blur */
   .glass {
-    background: rgba(12, 17, 32, 0.72);
-    backdrop-filter: blur(16px) saturate(180%);
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    background: rgba(8, 12, 18, 0.95);
     border: 1px solid var(--border-default);
   }
 
-  .glass-teal {
-    background: rgba(12, 17, 32, 0.80);
-    backdrop-filter: blur(20px) saturate(200%);
-    -webkit-backdrop-filter: blur(20px) saturate(200%);
-    border: 1px solid rgba(14, 165, 165, 0.18);
-    box-shadow: 0 0 0 1px rgba(14, 165, 165, 0.04) inset,
-                0 8px 32px rgba(0, 0, 0, 0.4);
-  }
-
   .glass-panel {
-    background: rgba(8, 12, 22, 0.85);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: rgba(5, 8, 12, 0.95);
     border: 1px solid var(--border-subtle);
-    box-shadow: 0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
   }
 
-  /* Status rings — muted, not neon */
-  .ring-safe    { box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.25); }
-  .ring-caution { box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.25); }
-  .ring-critical{ box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.25); }
+  /* Status rings — tight, no glow */
+  .ring-safe    { box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.4); }
+  .ring-caution { box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.4); }
+  .ring-critical{ box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.4); }
 
   /* Divider */
   .divider { border-top: 1px solid var(--border-subtle); }
@@ -118,16 +105,16 @@
     font-family: var(--font-mono);
     font-size: 10px;
     font-weight: 500;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
     color: var(--text-tertiary);
   }
 
-  /* Status badge */
-  .badge-safe     { background: var(--status-safe-bg);     color: var(--status-safe);     border: 1px solid rgba(34, 197, 94, 0.15); }
-  .badge-caution  { background: var(--status-caution-bg);  color: var(--status-caution);  border: 1px solid rgba(245, 158, 11, 0.15); }
-  .badge-critical { background: var(--status-critical-bg); color: var(--status-critical); border: 1px solid rgba(239, 68, 68, 0.15); }
-  .badge-teal     { background: var(--teal-soft);          color: var(--teal-base);        border: 1px solid rgba(14, 165, 165, 0.15); }
+  /* Status badge - more solid */
+  .badge-safe     { background: rgba(34, 197, 94, 0.1);     color: var(--status-safe);     border: 1px solid rgba(34, 197, 94, 0.3); }
+  .badge-caution  { background: rgba(245, 158, 11, 0.1);  color: var(--status-caution);  border: 1px solid rgba(245, 158, 11, 0.3); }
+  .badge-critical { background: rgba(239, 68, 68, 0.1); color: var(--status-critical); border: 1px solid rgba(239, 68, 68, 0.3); }
+  .badge-teal     { background: var(--teal-soft);          color: var(--teal-base);        border: 1px solid rgba(14, 165, 165, 0.3); }
 
   /* Pulse — very subtle */
   @keyframes pulse-dot {
@@ -138,15 +125,15 @@
 
   /* Fade in */
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(6px); }
+    from { opacity: 0; transform: translateY(4px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-  .fade-in { animation: fadeIn 0.35s ease-out forwards; }
+  .fade-in { animation: fadeIn 0.25s ease-out forwards; }
 
   /* Slide up for overlays */
   @keyframes slideUp {
-    from { opacity: 0; transform: translateY(12px); }
+    from { opacity: 0; transform: translateY(8px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-  .slide-up { animation: slideUp 0.25s ease-out forwards; }
+  .slide-up { animation: slideUp 0.2s ease-out forwards; }
 }

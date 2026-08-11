@@ -47,40 +47,40 @@ export const SimulationControlsPanel: React.FC<SimulationControlsPanelProps> = (
   };
 
   return (
-    <div className="flex flex-col gap-3 h-full overflow-y-auto custom-scrollbar">
+    <div className="flex flex-col gap-2 h-full overflow-y-auto custom-scrollbar">
       
       {/* ── 1. KEPLER.GL LAYER CONTROLS ── */}
-      <div className="glass-panel rounded-xl p-3.5 space-y-3" style={{ border: '1px solid var(--border-subtle)' }}>
-        <div className="flex items-center justify-between pb-2 border-b border-white/5">
+      <div className="glass-panel rounded p-2.5 space-y-2">
+        <div className="flex items-center justify-between pb-1.5 border-b border-white/5">
           <div className="flex items-center gap-2">
-            <Layers className="w-3.5 h-3.5" style={{ color: 'var(--teal-base)' }} />
-            <h3 className="text-xs font-semibold text-white uppercase tracking-wider font-mono">Kepler Layer Controls</h3>
+            <Layers className="w-3.5 h-3.5 text-slate-400" />
+            <h3 className="text-xs font-bold text-white uppercase tracking-wider font-mono">Map Layers</h3>
           </div>
           <span className="text-[10px] font-mono text-slate-400">6 Active</span>
         </div>
 
-        <div className="space-y-1.5">
+        <div className="space-y-1">
           {layers.map(({ key, label, icon: Icon, color }) => {
             const isVisible = currentLayers[key];
             return (
               <button
                 key={key}
                 onClick={() => onToggleLayer && onToggleLayer(key)}
-                className="w-full px-2.5 py-1.5 rounded-lg flex items-center justify-between text-xs transition-all cursor-pointer group"
+                className="w-full px-2 py-1.5 rounded flex items-center justify-between text-xs transition-all cursor-pointer group hover:bg-white/[0.02]"
                 style={{
                   background: isVisible ? 'rgba(255,255,255,0.03)' : 'transparent',
-                  border: `1px solid ${isVisible ? 'rgba(255,255,255,0.06)' : 'transparent'}`,
+                  border: `1px solid ${isVisible ? 'rgba(255,255,255,0.05)' : 'transparent'}`,
                 }}
               >
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full shrink-0" style={{ background: isVisible ? color : '#475569' }} />
-                  <Icon className={`w-3.5 h-3.5 shrink-0 ${isVisible ? 'text-slate-200' : 'text-slate-500'}`} />
-                  <span className={`text-[11px] ${isVisible ? 'text-slate-200 font-medium' : 'text-slate-500 line-through'}`}>{label}</span>
+                  <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: isVisible ? color : '#334155' }} />
+                  <Icon className={`w-3.5 h-3.5 shrink-0 ${isVisible ? 'text-slate-300' : 'text-slate-600'}`} />
+                  <span className={`text-[10px] uppercase tracking-wide font-mono ${isVisible ? 'text-slate-300 font-bold' : 'text-slate-500 line-through'}`}>{label}</span>
                 </div>
                 {isVisible ? (
-                  <Eye className="w-3.5 h-3.5 text-teal-400 opacity-80 group-hover:opacity-100" />
+                  <Eye className="w-3.5 h-3.5 text-teal-500/70 group-hover:text-teal-400" />
                 ) : (
-                  <EyeOff className="w-3.5 h-3.5 text-slate-600 opacity-60 group-hover:opacity-100" />
+                  <EyeOff className="w-3.5 h-3.5 text-slate-600 group-hover:text-slate-400" />
                 )}
               </button>
             );
@@ -89,11 +89,11 @@ export const SimulationControlsPanel: React.FC<SimulationControlsPanelProps> = (
       </div>
 
       {/* ── 2. SCENARIO & REAL HEADCOUNT CONTROLS ── */}
-      <div className="glass-panel rounded-xl p-3.5 space-y-3" style={{ border: '1px solid var(--border-subtle)' }}>
-        <div className="flex items-center justify-between pb-2 border-b border-white/5">
+      <div className="glass-panel rounded p-2.5 space-y-2">
+        <div className="flex items-center justify-between pb-1.5 border-b border-white/5">
           <div className="flex items-center gap-2">
-            <Sliders className="w-3.5 h-3.5" style={{ color: 'var(--teal-base)' }} />
-            <h3 className="text-xs font-semibold text-white uppercase tracking-wider font-mono">Scenario Controls</h3>
+            <Sliders className="w-3.5 h-3.5 text-slate-400" />
+            <h3 className="text-xs font-bold text-white uppercase tracking-wider font-mono">Parameters</h3>
           </div>
         </div>
 
@@ -103,8 +103,7 @@ export const SimulationControlsPanel: React.FC<SimulationControlsPanelProps> = (
           <select
             value={state.eventPhase}
             onChange={(e) => onUpdatePhase(e.target.value as EventPhase)}
-            className="w-full text-xs font-medium rounded-md px-2.5 py-1.5 focus:outline-none cursor-pointer transition-colors"
-            style={{ background: 'var(--surface-3)', border: '1px solid var(--border-default)', color: 'var(--text-primary)', fontFamily: 'var(--font-sans)' }}
+            className="w-full text-xs font-mono font-bold rounded px-2 py-1.5 focus:outline-none cursor-pointer transition-colors bg-[#080c12] border border-white/10 text-white"
           >
             <option value="Ingress">Ingress — Arrival Peak</option>
             <option value="Live event">Live Event — Mid-Match</option>
@@ -113,15 +112,15 @@ export const SimulationControlsPanel: React.FC<SimulationControlsPanelProps> = (
           </select>
         </div>
 
-        {/* REAL HEADCOUNT SLIDER (REPLACES 0.5x - 1.5x) */}
-        <div className="space-y-1.5">
+        {/* REAL HEADCOUNT SLIDER */}
+        <div className="space-y-1.5 pt-1">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-1.5">
-              <Users className="w-3 h-3 text-teal-400" />
-              <label className="label-mono">On-Site Headcount</label>
+              <Users className="w-3 h-3 text-slate-400" />
+              <label className="label-mono">Live Headcount</label>
             </div>
-            <span className="text-xs font-bold text-teal-300 font-mono">
-              {currentHeadcount.toLocaleString()} <span className="text-[10px] text-slate-500 font-normal">/ {baseCapacity.toLocaleString()}</span>
+            <span className="text-[10px] font-bold text-teal-400 font-mono">
+              {currentHeadcount.toLocaleString()} <span className="text-slate-500">/ {baseCapacity.toLocaleString()}</span>
             </span>
           </div>
           <input
@@ -135,57 +134,54 @@ export const SimulationControlsPanel: React.FC<SimulationControlsPanelProps> = (
               const mult = Number((count / baseCapacity).toFixed(2));
               onUpdateCrowdMultiplier(mult);
             }}
-            className="w-full h-1.5 rounded-full cursor-pointer accent-teal-400"
-            style={{ background: 'var(--surface-3)' }}
+            className="w-full h-1 rounded-full cursor-pointer bg-slate-800 accent-teal-500"
           />
-          <div className="flex justify-between text-[9px] font-mono text-slate-500">
-            <span>50% ({minHeadcount.toLocaleString()})</span>
-            <span>150% ({maxHeadcount.toLocaleString()})</span>
+          <div className="flex justify-between text-[9px] font-mono text-slate-600 font-bold">
+            <span>{minHeadcount.toLocaleString()} MIN</span>
+            <span>{maxHeadcount.toLocaleString()} MAX</span>
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="pt-1 flex gap-2">
+        <div className="pt-2 flex gap-2 border-t border-white/5 mt-2">
           <button
             onClick={onRunForecast}
-            className="flex-1 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-1.5"
-            style={{ background: 'var(--teal-dim)', color: 'white' }}
+            className="flex-1 py-1.5 rounded text-xs font-bold font-mono transition-colors flex items-center justify-center gap-1.5 bg-teal-500/10 text-teal-400 border border-teal-500/20 hover:bg-teal-500/20"
           >
-            <Activity className="w-3.5 h-3.5" />
-            Run Forecast
+            <Activity className="w-3 h-3" />
+            SIMULATE FUTURE
           </button>
           <button
             onClick={onToggleSimulation}
             title={state.isSimulating ? 'Pause simulation' : 'Resume simulation'}
-            className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
-            style={{ background: state.isSimulating ? 'rgba(245,158,11,0.12)' : 'rgba(34,197,94,0.1)', color: state.isSimulating ? 'var(--status-caution)' : 'var(--status-safe)', border: `1px solid ${state.isSimulating ? 'rgba(245,158,11,0.25)' : 'rgba(34,197,94,0.25)'}` }}
+            className={`px-3 py-1.5 rounded text-[10px] font-bold font-mono transition-colors border ${state.isSimulating ? 'bg-amber-500/10 text-amber-500 border-amber-500/20 hover:bg-amber-500/20' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20'}`}
           >
-            {state.isSimulating ? '⏸' : '▶'}
+            {state.isSimulating ? 'PAUSE' : 'START'}
           </button>
         </div>
       </div>
 
       {/* ── 3. ACTIVE MODEL PIPELINE ── */}
-      <div className="glass-panel rounded-xl p-3.5 flex-1" style={{ border: '1px solid var(--border-subtle)' }}>
-        <h3 className="text-xs font-semibold text-white uppercase tracking-wider pb-1.5 mb-2.5 font-mono border-b border-white/5">
-          Active GeoOps Pipeline
+      <div className="glass-panel rounded p-2.5 flex-1 flex flex-col min-h-0">
+        <h3 className="text-xs font-bold text-white uppercase tracking-wider pb-1.5 mb-2 font-mono border-b border-white/5">
+          Active Services
         </h3>
         
-        <div className="space-y-2.5">
+        <div className="space-y-2 overflow-y-auto">
           {[
-            { name: 'Geospatial Simulation Engine', status: 'Active', type: 'GPU Rendered' },
-            { name: 'Density Risk Scorer', status: 'Running', type: 'Heuristic p/m²' },
-            { name: 'Zero-Shot NLP Classifier', status: 'Active', type: 'BART-Large-MNLI' },
-            { name: '30-Min Bottleneck Predictor', status: 'Active', type: '30-min Lookahead' },
+            { name: 'Geospatial Engine', status: 'Running', type: 'GPU Rendered' },
+            { name: 'Density Scorer', status: 'Running', type: 'Heuristic p/m²' },
+            { name: 'NLP Classifier', status: 'Running', type: 'Zero-Shot' },
+            { name: 'Lookahead Predictor', status: 'Running', type: 'Time-Series' },
           ].map((model, idx) => (
             <div key={idx} className="flex flex-col gap-0.5">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-white">{model.name}</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-green-500 pulse-dot" />
+                <span className="text-[10px] font-bold text-slate-300 font-mono uppercase tracking-wide">{model.name}</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/50 border border-emerald-500 pulse-dot" />
               </div>
-              <div className="flex items-center justify-between text-[10px]" style={{ color: 'var(--text-tertiary)', fontFamily: 'var(--font-mono)' }}>
+              <div className="flex items-center justify-between text-[9px] font-mono text-slate-500 font-bold uppercase">
                 <span>{model.type}</span>
-                <span style={{ color: 'var(--status-safe)' }}>{model.status}</span>
+                <span className="text-emerald-500/70">{model.status}</span>
               </div>
             </div>
           ))}

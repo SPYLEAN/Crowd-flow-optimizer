@@ -186,18 +186,18 @@ export const ControlRoomView: React.FC<ControlRoomViewProps> = ({
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col p-4 gap-4 overflow-hidden max-w-[1800px] w-full mx-auto">
+      <div className="flex-1 flex flex-col p-2 gap-2 overflow-hidden w-full mx-auto relative">
         
         {/* ── 2. METRICS ROW (5 KPIs) ── */}
-        <div className="shrink-0">
+        <div className="shrink-0 z-10">
           <TelemetryPanel state={simulationState} />
         </div>
 
         {/* ── 3. MAIN GEOSPATIAL GRID (Left Kepler, Center MapLibre, Right Decision Queue) ── */}
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4 min-h-0">
+        <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-2 min-h-0 relative z-10">
           
           {/* Left Panel: Kepler Layer & Scenario Controls */}
-          <div className="lg:col-span-3 min-h-0 overflow-y-auto rounded-xl">
+          <div className="lg:col-span-3 min-h-0 overflow-y-auto">
             <SimulationControlsPanel
               state={simulationState}
               onUpdatePhase={handleUpdatePhase}
@@ -209,7 +209,7 @@ export const ControlRoomView: React.FC<ControlRoomViewProps> = ({
           </div>
 
           {/* Center Panel: MapLibre GeoOps Canvas */}
-          <div className="lg:col-span-6 min-h-0">
+          <div className="lg:col-span-6 min-h-0 bg-[#020308] border border-white/10 rounded relative overflow-hidden">
             <VenueMapCanvas
               state={simulationState}
               onSelectZone={(zId) => setHighlightZoneId(zId)}
@@ -218,7 +218,7 @@ export const ControlRoomView: React.FC<ControlRoomViewProps> = ({
           </div>
 
           {/* Right Panel: Decision Queue & Reroute Strategies */}
-          <div className="lg:col-span-3 min-h-0 overflow-y-auto rounded-xl">
+          <div className="lg:col-span-3 min-h-0 overflow-y-auto">
             <StrategyCards
               strategies={simulationState.strategies}
               currentVenueRisk={simulationState.overallVenueRisk}
@@ -229,9 +229,9 @@ export const ControlRoomView: React.FC<ControlRoomViewProps> = ({
         </div>
 
         {/* ── 4. BOTTOM DRAWER: 30-MIN TIMELINE & INCIDENT DOCK ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 shrink-0">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-2 shrink-0 z-10">
           {/* 30-Min Forecast Playback Timeline (Kepler style) */}
-          <div className="lg:col-span-6 h-[140px]">
+          <div className="lg:col-span-6 h-[120px]">
             <ForecastTimelinePanel
               state={simulationState}
               onTimeOffsetChange={handleTimeOffsetChange}
@@ -240,7 +240,7 @@ export const ControlRoomView: React.FC<ControlRoomViewProps> = ({
           </div>
 
           {/* Incident Classifier NLP Docker */}
-          <div className="lg:col-span-6 h-[140px]">
+          <div className="lg:col-span-6 h-[120px]">
             <IncidentClassifierPanel
               onAddIncident={handleAddIncident}
               selectedZoneId={highlightZoneId || 'gate_c'}
