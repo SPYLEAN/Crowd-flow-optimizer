@@ -53,7 +53,7 @@ export function App() {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1">
+      <main className="flex-1 flex flex-col min-h-0">
         {activeTab === 'landing' && (
           <LandingPage
             onGoToControlRoom={() => setActiveTab('control_room')}
