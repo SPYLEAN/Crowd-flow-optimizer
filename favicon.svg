@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Background Drop/Pin shape -->
+  <path d="M32 4C17.64 4 6 15.64 6 30C6 48.2 32 60 32 60C32 60 58 48.2 58 30C58 15.64 46.36 4 32 4Z" fill="url(#grad1)"/>
+  
+  <!-- Pulse Line -->
+  <path d="M16 28 L24 28 L28 18 L36 42 L40 28 L48 28" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <defs>
+    <linearGradient id="grad1" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0f766e" />
+      <stop offset="1" stop-color="#2dd4bf" />
+    </linearGradient>
+  </defs>
+</svg>
