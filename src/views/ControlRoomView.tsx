@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import type { SimulationState, RerouteStrategy, OperatorAction, IncidentReport, EventPhase } from '../types/crowdflow';
+import type { SimulationState, RerouteStrategy, OperatorAction, IncidentReport, EventPhase, LayerVisibility } from '../types/crowdflow';
 import { updateSimulationStepAsync, evaluateStrategyRisk } from '../services/simulationEngine';
 import { VenueMapCanvas } from '../components/VenueMapCanvas';
 import { TelemetryPanel } from '../components/TelemetryPanel';
 import { IncidentClassifierPanel } from '../components/IncidentClassifierPanel';
 import { StrategyCards } from '../components/StrategyCards';
 import { SimulationControlsPanel } from '../components/SimulationControlsPanel';
+import { ForecastTimelinePanel } from '../components/ForecastTimelinePanel';
 import { PRESETS } from '../data/presets';
-import { Radio } from 'lucide-react';
+import { Radio, Cpu } from 'lucide-react';
 
 interface ControlRoomViewProps {
   simulationState: SimulationState;
@@ -25,7 +26,7 @@ export const ControlRoomView: React.FC<ControlRoomViewProps> = ({
   const stateRef = React.useRef(simulationState);
   useEffect(() => { stateRef.current = simulationState; }, [simulationState]);
 
-  // Stable simulation step interval — does not re-register every tick
+  // Stable simulation step interval
   useEffect(() => {
     if (!simulationState.isSimulating) return;
 
@@ -42,7 +43,6 @@ export const ControlRoomView: React.FC<ControlRoomViewProps> = ({
       isMounted = false;
       clearInterval(interval);
     };
-  // Only re-register if the sim on/off toggle or speed changes — NOT on every state update
   }, [simulationState.isSimulating, simulationState.simulationSpeed, setSimulationState]);
 
   const handleUpdatePhase = (phase: EventPhase) => {
@@ -56,6 +56,29 @@ export const ControlRoomView: React.FC<ControlRoomViewProps> = ({
     setSimulationState((prev) => ({
       ...prev,
       totalCrowdMultiplier: mult,
+    }));
+  };
+
+  const handleToggleLayer = (layerKey: keyof LayerVisibility) => {
+    setSimulationState((prev) => ({
+      ...prev,
+      layers: {
+        showDensity: true,
+        showFlow: true,
+        showForecast: true,
+        showIncidents: true,
+        showRoutes: true,
+        showExits: true,
+        ...prev.layers,
+        [layerKey]: !((prev.layers || {})[layerKey] ?? true),
+      },
+    }));
+  };
+
+  const handleTimeOffsetChange = (offsetMins: number) => {
+    setSimulationState((prev) => ({
+      ...prev,
+      selectedTimeOffsetMins: offsetMins,
     }));
   };
 
@@ -121,37 +144,48 @@ export const ControlRoomView: React.FC<ControlRoomViewProps> = ({
   const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
   return (
-    <div className="flex flex-col h-[calc(100vh-56px)] max-h-[1080px] bg-[var(--surface-base)] fade-in pb-2">
+    <div className="flex flex-col min-h-[calc(100vh-56px)] bg-[var(--surface-base)] fade-in pb-4">
       
-      {/* 1. Hero / Command Strip */}
-      <div className="px-5 py-3 flex items-center justify-between shrink-0" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+      {/* ── 1. COMMAND BAR HEADER ── */}
+      <div className="px-5 py-2.5 flex items-center justify-between shrink-0 bg-[#060a14] border-b border-white/5">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <Radio className="w-4 h-4" style={{ color: 'var(--teal-base)' }} />
-            <h1 className="text-sm font-semibold text-white tracking-wide uppercase">Operations Control</h1>
+            <Radio className="w-4 h-4 text-teal-400" />
+            <h1 className="text-xs font-bold text-white tracking-widest uppercase font-mono">GeoOps Control Console</h1>
           </div>
-          <div className="h-4 w-px bg-slate-800" />
-          <div className="flex items-baseline gap-2">
-            <h2 className="text-xs font-semibold text-white" style={{ fontFamily: 'var(--font-mono)' }}>{venueName}</h2>
-            <span className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>• Forecast crowd pressure. Approve safe movement.</span>
+          <div className="h-3.5 w-px bg-slate-800" />
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-teal-300 font-mono">{venueName}</span>
+            <span className="text-[10px] text-slate-500 font-mono">• Real-Time Geospatial Twin</span>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <span className="label-mono">{currentTime}</span>
+
+        <div className="flex items-center gap-4 text-xs font-mono">
+          <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot" />
+            <span>DATA FRESHNESS: 100%</span>
+          </div>
+
+          <div className="flex items-center gap-1.5 px-2 py-1 rounded bg-teal-500/10 text-teal-300 border border-teal-500/20 text-[10px] font-bold">
+            <Cpu className="w-3 h-3 text-teal-400" />
+            <span>NLP INFERENCE: ACTIVE</span>
+          </div>
+
+          <span className="text-slate-300 font-bold">{currentTime}</span>
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col p-4 gap-4 overflow-hidden">
+      <div className="flex-1 flex flex-col p-4 gap-4 overflow-hidden max-w-[1800px] w-full mx-auto">
         
-        {/* 2. Metrics Row */}
+        {/* ── 2. METRICS ROW (5 KPIs) ── */}
         <div className="shrink-0">
           <TelemetryPanel state={simulationState} />
         </div>
 
-        {/* 3. Main Grid (Left, Center Map, Right) */}
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4 min-h-0">
+        {/* ── 3. MAIN GEOSPATIAL GRID (Left Kepler, Center MapLibre, Right Decision Queue) ── */}
+        <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-4 min-h-[500px]">
           
-          {/* Left Panel: Scenario Controls */}
+          {/* Left Panel: Kepler Layer & Scenario Controls */}
           <div className="lg:col-span-3 min-h-0">
             <SimulationControlsPanel
               state={simulationState}
@@ -159,11 +193,12 @@ export const ControlRoomView: React.FC<ControlRoomViewProps> = ({
               onUpdateCrowdMultiplier={handleUpdateMultiplier}
               onToggleSimulation={() => setSimulationState((prev) => ({ ...prev, isSimulating: !prev.isSimulating }))}
               onRunForecast={handleRunForecast}
+              onToggleLayer={handleToggleLayer}
             />
           </div>
 
-          {/* Center Panel: Map Area */}
-          <div className="lg:col-span-6 min-h-0 rounded-xl overflow-hidden" style={{ border: '1px solid var(--border-subtle)' }}>
+          {/* Center Panel: MapLibre GeoOps Canvas */}
+          <div className="lg:col-span-6 min-h-0">
             <VenueMapCanvas
               state={simulationState}
               onSelectZone={(zId) => setHighlightZoneId(zId)}
@@ -171,7 +206,7 @@ export const ControlRoomView: React.FC<ControlRoomViewProps> = ({
             />
           </div>
 
-          {/* Right Panel: Decision Queue & Strategies */}
+          {/* Right Panel: Decision Queue & Reroute Strategies */}
           <div className="lg:col-span-3 min-h-0">
             <StrategyCards
               strategies={simulationState.strategies}
@@ -182,13 +217,25 @@ export const ControlRoomView: React.FC<ControlRoomViewProps> = ({
           </div>
         </div>
 
-        {/* 4. Bottom Dock: Incident Classifier & Signals */}
-        <div className="shrink-0 h-[140px]">
-          <IncidentClassifierPanel
-            onAddIncident={handleAddIncident}
-            selectedZoneId={highlightZoneId || 'gate_c'}
-            dataReadinessScore={94}
-          />
+        {/* ── 4. BOTTOM DRAWER: 30-MIN TIMELINE & INCIDENT DOCK ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 shrink-0">
+          {/* 30-Min Forecast Playback Timeline (Kepler style) */}
+          <div className="lg:col-span-6 h-[140px]">
+            <ForecastTimelinePanel
+              state={simulationState}
+              onTimeOffsetChange={handleTimeOffsetChange}
+              onRunForecast={handleRunForecast}
+            />
+          </div>
+
+          {/* Incident Classifier NLP Docker */}
+          <div className="lg:col-span-6 h-[140px]">
+            <IncidentClassifierPanel
+              onAddIncident={handleAddIncident}
+              selectedZoneId={highlightZoneId || 'gate_c'}
+              dataReadinessScore={94}
+            />
+          </div>
         </div>
         
       </div>

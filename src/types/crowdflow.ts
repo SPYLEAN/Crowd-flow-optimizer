@@ -133,6 +133,15 @@ export interface VenuePreset {
 
 export type EventPhase = 'Ingress' | 'Live event' | 'Interval' | 'Egress';
 
+export interface LayerVisibility {
+  showDensity: boolean;
+  showFlow: boolean;
+  showForecast: boolean;
+  showIncidents: boolean;
+  showRoutes: boolean;
+  showExits: boolean;
+}
+
 export interface SimulationState {
   presetId: string;
   currentTime: string;
@@ -149,6 +158,8 @@ export interface SimulationState {
   selectedStrategyId: string | null;
   isSimulating: boolean;
   simulationSpeed: number; // 1x, 2x, 5x
+  layers?: LayerVisibility;
+  selectedTimeOffsetMins?: number; // 0, 5, 10, 20, 30 min forecast playback
 }
 
 export interface JudgeStep {

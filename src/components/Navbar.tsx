@@ -49,9 +49,9 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
             <div className="flex items-baseline gap-2">
               <span className="text-sm font-semibold tracking-tight text-white">CrowdFlow</span>
-              <span className="text-sm font-semibold tracking-tight" style={{ color: 'var(--teal-base)' }}>AI</span>
+              <span className="text-sm font-semibold tracking-tight" style={{ color: 'var(--teal-base)' }}>GeoOps</span>
               <span className="hidden sm:block text-xs font-medium px-1.5 py-0.5 rounded" style={{ background: 'var(--teal-soft)', color: 'var(--teal-base)', border: '1px solid rgba(14,165,165,0.15)', fontFamily: 'var(--font-mono)' }}>
-                Operations Control
+                Console
               </span>
             </div>
           </button>

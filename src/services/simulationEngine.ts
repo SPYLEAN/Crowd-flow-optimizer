@@ -47,6 +47,15 @@ export function initializeSimulationState(preset: VenuePreset): SimulationState 
     selectedStrategyId: null,
     isSimulating: true,
     simulationSpeed: 1,
+    layers: {
+      showDensity: true,
+      showFlow: true,
+      showForecast: true,
+      showIncidents: true,
+      showRoutes: true,
+      showExits: true,
+    },
+    selectedTimeOffsetMins: 0,
   };
 }
 
