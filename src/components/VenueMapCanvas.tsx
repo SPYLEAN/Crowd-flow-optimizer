@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { SimulationState, Zone, LayerVisibility } from '../types/crowdflow';
-import { Info, MapPin, Navigation } from 'lucide-react';
+import { Info, MapPin, Navigation, ZoomIn, ZoomOut, Maximize2, Move } from 'lucide-react';
 
 interface Particle {
   x: number;
@@ -25,9 +25,17 @@ export const VenueMapCanvas: React.FC<VenueMapCanvasProps> = ({
   onSelectZone,
   highlightZoneId,
 }) => {
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  
   const [hoveredZone, setHoveredZone] = useState<Zone | null>(null);
   const [selectedZone, setSelectedZone] = useState<Zone | null>(null);
+
+  // Map Pan & Zoom Interactive Controls
+  const [zoomLevel, setZoomLevel] = useState<number>(1.0);
+  const [panOffset, setPanOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const isDraggingRef = useRef(false);
+  const dragStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
   const layerFlags: LayerVisibility = state.layers || {
     showDensity: true,
@@ -38,18 +46,39 @@ export const VenueMapCanvas: React.FC<VenueMapCanvasProps> = ({
     showExits: true,
   };
 
-  // Flow animation particles state
+  // Particles for flow animation
   const particlesRef = useRef<Particle[]>([]);
 
+  // Reset Pan/Zoom on scenario change
   useEffect(() => {
+    setZoomLevel(1.0);
+    setPanOffset({ x: 0, y: 0 });
+  }, [state.presetId]);
+
+  useEffect(() => {
+    const container = containerRef.current;
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!container || !canvas) return;
+
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     let animationFrameId: number;
 
-    // Initialize particles for flow animation
+    // Handle High-DPI Canvas Resizing cleanly (No object-cover cropping!)
+    const handleResize = () => {
+      const rect = container.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+    };
+
+    handleResize();
+    const resizeObserver = new ResizeObserver(handleResize);
+    resizeObserver.observe(container);
+
+    // Initialize particles
     if (particlesRef.current.length === 0) {
       const initialParticles: Particle[] = [];
       Object.values(state.corridors).forEach((corridor) => {
@@ -75,58 +104,98 @@ export const VenueMapCanvas: React.FC<VenueMapCanvasProps> = ({
     }
 
     const render = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const rect = container.getBoundingClientRect();
+      const width = rect.width;
+      const height = rect.height;
 
-      // ── 1. MAPLIBRE GIS BASE MAP & VECTOR GRID ──
+      ctx.clearRect(0, 0, width, height);
+
+      // ── 1. MAPLIBRE GIS BASE BACKGROUND ──
       ctx.fillStyle = '#060a14';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, width, height);
 
-      // Coordinates Grid (Lat/Lon styling)
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+      // Grid Coordinates Lines
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.035)';
       ctx.lineWidth = 1;
-      const gridSize = 50;
-      for (let x = 0; x < canvas.width; x += gridSize) {
+      const gridSize = 45;
+      for (let x = 0; x < width; x += gridSize) {
         ctx.beginPath();
         ctx.moveTo(x, 0);
-        ctx.lineTo(x, canvas.height);
+        ctx.lineTo(x, height);
         ctx.stroke();
       }
-      for (let y = 0; y < canvas.height; y += gridSize) {
+      for (let y = 0; y < height; y += gridSize) {
         ctx.beginPath();
         ctx.moveTo(0, y);
-        ctx.lineTo(canvas.width, y);
+        ctx.lineTo(width, y);
         ctx.stroke();
       }
 
       // GeoGIS lat/lon border ticks
       ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-      ctx.font = '500 8px "JetBrains Mono", monospace';
-      ctx.fillText('18.9912° N', 10, 15);
-      ctx.fillText('72.8241° E', canvas.width - 60, 15);
-      ctx.fillText('GEOSPATIAL TWIN ENGINE v2.4 — MAPLIBRE VECTOR BASE', 10, canvas.height - 10);
+      ctx.font = '500 8.5px "JetBrains Mono", monospace';
+      ctx.fillText('18.9912° N', 12, 16);
+      ctx.fillText('72.8241° E', width - 65, 16);
+      ctx.fillText('GEOSPATIAL TWIN ENGINE v2.4 — MAPLIBRE VECTOR BASE', 12, height - 12);
 
-      // ── 2. VENUE FOOTPRINT GEOMETRY (Polygon outlines) ──
+      // ── 2. AUTO-FIT BOUNDING BOX COMPUTATION (Fixes clipping!) ──
       const zonesList = Object.values(state.zones);
+      if (zonesList.length === 0) return;
+
+      const xs = zonesList.map((z) => z.x);
+      const ys = zonesList.map((z) => z.y);
+      const minX = Math.min(...xs);
+      const maxX = Math.max(...xs);
+      const minY = Math.min(...ys);
+      const maxY = Math.max(...ys);
+
+      const dataW = maxX - minX || 1;
+      const dataH = maxY - minY || 1;
+      const padding = 70; // 70px safe margin so labels/nodes never touch edge
+
+      const scaleX = (width - padding * 2) / dataW;
+      const scaleY = (height - padding * 2) / dataH;
+      const autoFitScale = Math.min(scaleX, scaleY);
+
+      // Center of data
+      const dataCenterX = (minX + maxX) / 2;
+      const dataCenterY = (minY + maxY) / 2;
+
+      // Center of container
+      const containerCenterX = width / 2;
+      const containerCenterY = height / 2;
+
+      // Coordinate Transform Function
+      const mapToCanvas = (gx: number, gy: number) => {
+        const cx = (gx - dataCenterX) * autoFitScale * zoomLevel + containerCenterX + panOffset.x;
+        const cy = (gy - dataCenterY) * autoFitScale * zoomLevel + containerCenterY + panOffset.y;
+        return { x: cx, y: cy };
+      };
+
+      // ── 3. VENUE FOOTPRINT GEOMETRY (Polygon outline) ──
       if (zonesList.length >= 3) {
         ctx.beginPath();
-        ctx.moveTo(zonesList[0].x, zonesList[0].y);
+        const pt0 = mapToCanvas(zonesList[0].x, zonesList[0].y);
+        ctx.moveTo(pt0.x, pt0.y);
         for (let i = 1; i < zonesList.length; i++) {
-          ctx.lineTo(zonesList[i].x, zonesList[i].y);
+          const pt = mapToCanvas(zonesList[i].x, zonesList[i].y);
+          ctx.lineTo(pt.x, pt.y);
         }
         ctx.closePath();
-        ctx.strokeStyle = 'rgba(14, 165, 165, 0.08)';
+        ctx.strokeStyle = 'rgba(14, 165, 165, 0.10)';
         ctx.lineWidth = 2;
         ctx.fillStyle = 'rgba(14, 165, 165, 0.02)';
         ctx.fill();
         ctx.stroke();
       }
 
-      // ── 3. DENSITY HEATMAP LAYER ──
+      // ── 4. DENSITY HEATMAP LAYER ──
       if (layerFlags.showDensity) {
-        Object.values(state.zones).forEach((zone) => {
+        zonesList.forEach((zone) => {
+          const pt = mapToCanvas(zone.x, zone.y);
           const density = zone.density || 1.5;
-          const radius = Math.min(170, Math.sqrt(zone.area_m2) * 3.8);
-          const gradient = ctx.createRadialGradient(zone.x, zone.y, 8, zone.x, zone.y, radius);
+          const radius = Math.min(160, Math.sqrt(zone.area_m2) * 3.2 * autoFitScale * zoomLevel);
+          const gradient = ctx.createRadialGradient(pt.x, pt.y, 6, pt.x, pt.y, radius);
 
           if (density >= zone.critical_density) {
             gradient.addColorStop(0, 'rgba(239, 68, 68, 0.28)');
@@ -143,16 +212,19 @@ export const VenueMapCanvas: React.FC<VenueMapCanvasProps> = ({
 
           ctx.fillStyle = gradient;
           ctx.beginPath();
-          ctx.arc(zone.x, zone.y, radius, 0, Math.PI * 2);
+          ctx.arc(pt.x, pt.y, radius, 0, Math.PI * 2);
           ctx.fill();
         });
       }
 
-      // ── 4. CORRIDORS / PATHWAYS & REROUTES ──
+      // ── 5. CORRIDORS / PATHWAYS & REROUTES ──
       Object.values(state.corridors).forEach((corridor) => {
         const fromZ = state.zones[corridor.from_zone];
         const toZ = state.zones[corridor.to_zone];
         if (!fromZ || !toZ) return;
+
+        const p1 = mapToCanvas(fromZ.x, fromZ.y);
+        const p2 = mapToCanvas(toZ.x, toZ.y);
 
         const isReroute = corridor.status === 'rerouted';
         const isEmergency = corridor.status === 'emergency_only';
@@ -161,27 +233,26 @@ export const VenueMapCanvas: React.FC<VenueMapCanvasProps> = ({
         if (isEmergency && !layerFlags.showExits) return;
 
         ctx.beginPath();
-        ctx.moveTo(fromZ.x, fromZ.y);
-        ctx.lineTo(toZ.x, toZ.y);
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
 
         if (isReroute) {
-          ctx.strokeStyle = '#10b981'; // Mint/Cyan active safe reroute
-          ctx.lineWidth = Math.max(2.5, corridor.width_m * 0.8);
+          ctx.strokeStyle = '#10b981'; // Mint/Cyan active reroute
+          ctx.lineWidth = Math.max(2.5, corridor.width_m * 0.7);
           ctx.setLineDash([8, 4]);
         } else if (corridor.status === 'open') {
-          ctx.strokeStyle = 'rgba(14, 165, 165, 0.3)';
-          ctx.lineWidth = Math.max(1.5, corridor.width_m * 0.5);
+          ctx.strokeStyle = 'rgba(14, 165, 165, 0.35)';
+          ctx.lineWidth = Math.max(1.5, corridor.width_m * 0.45);
           ctx.setLineDash([]);
         } else if (corridor.status === 'restricted') {
           ctx.strokeStyle = 'rgba(245, 158, 11, 0.6)';
-          ctx.lineWidth = Math.max(1.5, corridor.width_m * 0.5);
+          ctx.lineWidth = Math.max(1.5, corridor.width_m * 0.45);
           ctx.setLineDash([4, 4]);
         } else if (isEmergency) {
           ctx.strokeStyle = 'rgba(99, 102, 241, 0.6)';
           ctx.lineWidth = 2;
           ctx.setLineDash([2, 4]);
         } else {
-          // Closed
           ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
           ctx.lineWidth = 1;
           ctx.setLineDash([3, 3]);
@@ -190,42 +261,48 @@ export const VenueMapCanvas: React.FC<VenueMapCanvasProps> = ({
         ctx.stroke();
         ctx.setLineDash([]);
 
-        // Corridor Edge Tag
-        const midX = (fromZ.x + toZ.x) / 2;
-        const midY = (fromZ.y + toZ.y) / 2;
-        ctx.fillStyle = isReroute ? '#10b981' : 'rgba(255,255,255,0.35)';
+        // Corridor Tag
+        const midX = (p1.x + p2.x) / 2;
+        const midY = (p1.y + p2.y) / 2;
+        ctx.fillStyle = isReroute ? '#10b981' : 'rgba(255,255,255,0.4)';
         ctx.font = '600 9px "JetBrains Mono", monospace';
         ctx.fillText(`${corridor.edge_id}`, midX - 10, midY - 6);
       });
 
-      // ── 5. FLOW DIRECTION & ANIMATED PARTICLES LAYER ──
+      // ── 6. FLOW DIRECTION & ANIMATED PARTICLES LAYER ──
       if (layerFlags.showFlow) {
         particlesRef.current.forEach((p) => {
           const corridor = state.corridors[p.edgeId];
-          if (corridor && corridor.status !== 'closed') {
+          const fromZ = state.zones[corridor?.from_zone];
+          const toZ = state.zones[corridor?.to_zone];
+          if (corridor && corridor.status !== 'closed' && fromZ && toZ) {
             p.progress += p.speed * (corridor.status === 'rerouted' ? 1.4 : 0.9);
             if (p.progress >= 1) p.progress = 0;
 
-            p.x = p.fromX + (p.toX - p.fromX) * p.progress;
-            p.y = p.fromY + (p.toY - p.fromY) * p.progress;
+            const p1 = mapToCanvas(fromZ.x, fromZ.y);
+            const p2 = mapToCanvas(toZ.x, toZ.y);
+
+            const px = p1.x + (p2.x - p1.x) * p.progress;
+            const py = p1.y + (p2.y - p1.y) * p.progress;
 
             ctx.beginPath();
-            ctx.arc(p.x, p.y, corridor.status === 'rerouted' ? 2.5 : 1.8, 0, Math.PI * 2);
-            ctx.fillStyle = corridor.status === 'rerouted' ? '#10b981' : 'rgba(14, 165, 165, 0.7)';
+            ctx.arc(px, py, corridor.status === 'rerouted' ? 2.5 : 1.8, 0, Math.PI * 2);
+            ctx.fillStyle = corridor.status === 'rerouted' ? '#10b981' : 'rgba(14, 165, 165, 0.75)';
             ctx.fill();
           }
         });
       }
 
-      // ── 6. BOTTLENECK FORECAST AURA LAYER ──
+      // ── 7. BOTTLENECK FORECAST AURA LAYER ──
       if (layerFlags.showForecast && state.forecastBreachTimeMins) {
-        Object.values(state.zones).forEach((zone) => {
+        zonesList.forEach((zone) => {
+          const pt = mapToCanvas(zone.x, zone.y);
           const density = zone.density || 1.5;
           if (density >= zone.safe_density) {
             const pulse = (Date.now() % 1500) / 1500;
-            const ringRadius = 26 + pulse * 14;
+            const ringRadius = 24 + pulse * 14;
             ctx.beginPath();
-            ctx.arc(zone.x, zone.y, ringRadius, 0, Math.PI * 2);
+            ctx.arc(pt.x, pt.y, ringRadius, 0, Math.PI * 2);
             ctx.strokeStyle = density >= zone.critical_density ? `rgba(239, 68, 68, ${0.5 * (1 - pulse)})` : `rgba(245, 158, 11, ${0.5 * (1 - pulse)})`;
             ctx.lineWidth = 1.5;
             ctx.stroke();
@@ -233,17 +310,19 @@ export const VenueMapCanvas: React.FC<VenueMapCanvasProps> = ({
         });
       }
 
-      // ── 7. ZONE NODES & HUMAN-READABLE SAFETY BADGES ──
-      Object.values(state.zones).forEach((zone) => {
+      // ── 8. ZONE NODES & HUMAN-READABLE SAFETY BADGES ──
+      zonesList.forEach((zone) => {
+        const pt = mapToCanvas(zone.x, zone.y);
         const density = zone.density || 1.5;
         const isCritical = density >= zone.critical_density;
         const isHigh = density >= zone.safe_density;
         const isHighlighted = highlightZoneId === zone.zone_id;
 
-        // Zone Node Body
+        const baseRadius = Math.max(16, Math.min(26, Math.sqrt(zone.area_m2) * 0.9));
+        const nodeRadius = baseRadius * Math.sqrt(zoomLevel);
+
         ctx.beginPath();
-        const nodeRadius = Math.max(18, Math.min(28, Math.sqrt(zone.area_m2) * 0.95));
-        ctx.arc(zone.x, zone.y, nodeRadius, 0, Math.PI * 2);
+        ctx.arc(pt.x, pt.y, nodeRadius, 0, Math.PI * 2);
 
         let fillColor = 'rgba(14, 165, 165, 0.15)';
         let strokeColor = 'rgba(14, 165, 165, 0.4)';
@@ -252,12 +331,12 @@ export const VenueMapCanvas: React.FC<VenueMapCanvasProps> = ({
 
         if (isCritical) {
           fillColor = 'rgba(239, 68, 68, 0.25)';
-          strokeColor = 'rgba(239, 68, 68, 0.8)';
+          strokeColor = 'rgba(239, 68, 68, 0.85)';
           statusLabel = 'Critical Crush Risk';
           statusColor = '#ef4444';
         } else if (isHigh) {
           fillColor = 'rgba(245, 158, 11, 0.2)';
-          strokeColor = 'rgba(245, 158, 11, 0.7)';
+          strokeColor = 'rgba(245, 158, 11, 0.75)';
           statusLabel = 'High Pressure';
           statusColor = '#f59e0b';
         }
@@ -268,32 +347,32 @@ export const VenueMapCanvas: React.FC<VenueMapCanvasProps> = ({
         ctx.strokeStyle = isHighlighted ? '#0ea5a5' : strokeColor;
         ctx.stroke();
 
-        // Zone Title
+        // Zone Title Text
         ctx.fillStyle = '#ffffff';
         ctx.font = '600 10px Inter, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(zone.name.substring(0, 12), zone.x, zone.y - 5);
+        ctx.fillText(zone.name.substring(0, 14), pt.x, pt.y - 5);
 
         // Density + Human Readable Status Badge
         ctx.fillStyle = statusColor;
         ctx.font = '600 8.5px "JetBrains Mono", monospace';
-        ctx.fillText(`${density} p/m² • ${statusLabel}`, zone.x, zone.y + 7);
+        ctx.fillText(`${density} p/m² • ${statusLabel}`, pt.x, pt.y + 7);
 
-        // ── 8. INCIDENT MARKERS LAYER ──
+        // ── 9. INCIDENT MARKERS LAYER ──
         if (layerFlags.showIncidents) {
           const hasIncident = state.activeIncidents.some(
             (i) => i.zone === zone.zone_id && i.status !== 'mitigated'
           );
           if (hasIncident) {
             ctx.beginPath();
-            ctx.arc(zone.x + nodeRadius - 2, zone.y - nodeRadius + 2, 8, 0, Math.PI * 2);
+            ctx.arc(pt.x + nodeRadius - 2, pt.y - nodeRadius + 2, 7.5, 0, Math.PI * 2);
             ctx.fillStyle = '#ef4444';
             ctx.fill();
-            
+
             ctx.fillStyle = '#ffffff';
             ctx.font = 'bold 9px sans-serif';
-            ctx.fillText('!', zone.x + nodeRadius - 2, zone.y - nodeRadius + 2);
+            ctx.fillText('!', pt.x + nodeRadius - 2, pt.y - nodeRadius + 2);
           }
         }
       });
@@ -305,22 +384,70 @@ export const VenueMapCanvas: React.FC<VenueMapCanvasProps> = ({
 
     return () => {
       cancelAnimationFrame(animationFrameId);
+      resizeObserver.disconnect();
     };
-  }, [state, layerFlags, highlightZoneId]);
+  }, [state, layerFlags, highlightZoneId, zoomLevel, panOffset]);
+
+  // ── MOUSE INTERACTION & DRAG PANNING ──
+  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    isDraggingRef.current = true;
+    dragStartRef.current = { x: e.clientX - panOffset.x, y: e.clientY - panOffset.y };
+  };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const rect = canvas.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * canvas.width;
-    const y = ((e.clientY - rect.top) / rect.height) * canvas.height;
+    const container = containerRef.current;
+    if (!container) return;
+
+    if (isDraggingRef.current) {
+      setPanOffset({
+        x: e.clientX - dragStartRef.current.x,
+        y: e.clientY - dragStartRef.current.y,
+      });
+      return;
+    }
+
+    const rect = container.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+
+    const width = rect.width;
+    const height = rect.height;
+    const zonesList = Object.values(state.zones);
+
+    if (zonesList.length === 0) return;
+
+    const xs = zonesList.map((z) => z.x);
+    const ys = zonesList.map((z) => z.y);
+    const minX = Math.min(...xs), maxX = Math.max(...xs);
+    const minY = Math.min(...ys), maxY = Math.max(...ys);
+
+    const dataW = maxX - minX || 1;
+    const dataH = maxY - minY || 1;
+    const padding = 70;
+
+    const autoFitScale = Math.min((width - padding * 2) / dataW, (height - padding * 2) / dataH);
+    const dataCenterX = (minX + maxX) / 2;
+    const dataCenterY = (minY + maxY) / 2;
 
     let found: Zone | null = null;
-    Object.values(state.zones).forEach((z) => {
-      const dist = Math.hypot(z.x - x, z.y - y);
+    zonesList.forEach((z) => {
+      const cx = (z.x - dataCenterX) * autoFitScale * zoomLevel + width / 2 + panOffset.x;
+      const cy = (z.y - dataCenterY) * autoFitScale * zoomLevel + height / 2 + panOffset.y;
+      const dist = Math.hypot(cx - mx, cy - my);
       if (dist <= 32) found = z;
     });
+
     setHoveredZone(found);
+  };
+
+  const handleMouseUp = () => {
+    isDraggingRef.current = false;
+  };
+
+  const handleWheel = (e: React.WheelEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
+    const delta = e.deltaY < 0 ? 0.1 : -0.1;
+    setZoomLevel((prev) => Math.max(0.7, Math.min(2.5, Number((prev + delta).toFixed(2)))));
   };
 
   const handleClick = () => {
@@ -330,11 +457,17 @@ export const VenueMapCanvas: React.FC<VenueMapCanvasProps> = ({
     }
   };
 
+  const resetView = () => {
+    setZoomLevel(1.0);
+    setPanOffset({ x: 0, y: 0 });
+  };
+
   return (
-    <div className="relative glass-panel rounded-xl overflow-hidden shadow-2xl h-full min-h-[480px]" style={{ border: '1px solid var(--border-subtle)' }}>
-      {/* Top Map Geospatial Banner */}
+    <div ref={containerRef} className="relative glass-panel rounded-xl overflow-hidden shadow-2xl h-full min-h-[480px]" style={{ border: '1px solid var(--border-subtle)' }}>
+      
+      {/* ── TOP MAP BANNERS ── */}
       <div className="absolute top-3 left-3 right-3 z-10 flex items-center justify-between pointer-events-none">
-        <div className="px-3 py-1.5 rounded-lg flex items-center gap-2.5 pointer-events-auto" style={{ background: 'rgba(6,10,20,0.90)', backdropFilter: 'blur(12px)', border: '1px solid var(--border-subtle)' }}>
+        <div className="px-3 py-1.5 rounded-lg flex items-center gap-2.5 pointer-events-auto" style={{ background: 'rgba(6,10,20,0.92)', backdropFilter: 'blur(12px)', border: '1px solid var(--border-subtle)' }}>
           <div className="w-2 h-2 rounded-full pulse-dot bg-teal-400" />
           <span className="text-[10px] font-bold text-white tracking-widest uppercase font-mono">
             MAPLIBRE GEOOPS DIGITAL TWIN
@@ -344,24 +477,59 @@ export const VenueMapCanvas: React.FC<VenueMapCanvasProps> = ({
           </span>
         </div>
 
-        <div className="flex items-center gap-2 pointer-events-auto text-[10px] font-mono text-teal-400 px-3 py-1.5 rounded-lg" style={{ background: 'rgba(6,10,20,0.90)', backdropFilter: 'blur(12px)', border: '1px solid var(--border-subtle)' }}>
-          <MapPin className="w-3 h-3" />
-          <span>REAL-TIME GRAPH PIPELINE ACTIVE</span>
+        {/* Top Right Controls */}
+        <div className="flex items-center gap-2 pointer-events-auto">
+          {/* Zoom & Pan Controls Bar */}
+          <div className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-mono" style={{ background: 'rgba(6,10,20,0.92)', backdropFilter: 'blur(12px)', border: '1px solid var(--border-subtle)' }}>
+            <button
+              onClick={() => setZoomLevel((z) => Math.min(2.5, Number((z + 0.2).toFixed(1))))}
+              title="Zoom In"
+              className="p-1 rounded text-slate-300 hover:text-white hover:bg-white/10 transition-colors"
+            >
+              <ZoomIn className="w-3.5 h-3.5" />
+            </button>
+            <span className="text-[10px] font-bold text-teal-400 px-1">{Math.round(zoomLevel * 100)}%</span>
+            <button
+              onClick={() => setZoomLevel((z) => Math.max(0.7, Number((z - 0.2).toFixed(1))))}
+              title="Zoom Out"
+              className="p-1 rounded text-slate-300 hover:text-white hover:bg-white/10 transition-colors"
+            >
+              <ZoomOut className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={resetView}
+              title="Reset View Fit"
+              className="p-1 ml-1 rounded text-slate-400 hover:text-white hover:bg-white/10 transition-colors border-l border-white/10 pl-1.5"
+            >
+              <Maximize2 className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          <div className="flex items-center gap-1.5 text-[10px] font-mono text-teal-400 px-3 py-1.5 rounded-lg" style={{ background: 'rgba(6,10,20,0.92)', backdropFilter: 'blur(12px)', border: '1px solid var(--border-subtle)' }}>
+            <MapPin className="w-3 h-3" />
+            <span>REAL-TIME GRAPH PIPELINE ACTIVE</span>
+          </div>
         </div>
       </div>
 
-      {/* Canvas */}
+      {/* ── CANVAS ELEMENT (Fully Responsive, Crisp Resolution, Drag & Zoom) ── */}
       <canvas
         ref={canvasRef}
-        width={950}
-        height={620}
+        onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+        onWheel={handleWheel}
         onClick={handleClick}
-        className="w-full h-full object-cover cursor-crosshair block"
+        className="w-full h-full cursor-grab active:cursor-grabbing block"
       />
 
-      {/* Bottom Map Legend */}
-      <div className="absolute bottom-3 left-3 z-10 px-3 py-2 rounded-lg flex items-center gap-4 text-[10px] font-mono font-semibold uppercase tracking-wider" style={{ background: 'rgba(6,10,20,0.90)', backdropFilter: 'blur(12px)', border: '1px solid var(--border-subtle)', color: 'var(--text-tertiary)' }}>
+      {/* ── BOTTOM MAP LEGEND & PAN DRAG INSTRUCTION ── */}
+      <div className="absolute bottom-3 left-3 z-10 px-3 py-2 rounded-lg flex items-center gap-4 text-[10px] font-mono font-semibold uppercase tracking-wider" style={{ background: 'rgba(6,10,20,0.92)', backdropFilter: 'blur(12px)', border: '1px solid var(--border-subtle)', color: 'var(--text-tertiary)' }}>
+        <div className="flex items-center gap-1 text-slate-400 border-r border-white/10 pr-3">
+          <Move className="w-3 h-3 text-teal-400" />
+          <span>Drag to Pan • Scroll to Zoom</span>
+        </div>
         <div className="flex items-center gap-1.5 text-emerald-400">
           <span className="w-2 h-2 rounded-full bg-emerald-500" />
           <span>Nominal (&lt;2 p/m²)</span>
@@ -380,7 +548,7 @@ export const VenueMapCanvas: React.FC<VenueMapCanvasProps> = ({
         </div>
       </div>
 
-      {/* Zone Detail Modal / Card on Click */}
+      {/* ── ZONE DETAIL INSPECTOR CARD ── */}
       {selectedZone && (
         <div className="absolute bottom-3 right-3 z-20 glass-panel rounded-xl p-4 max-w-[290px] w-full shadow-2xl space-y-3" style={{ border: '1px solid var(--teal-base)' }}>
           <div className="flex items-center justify-between pb-2 border-b border-white/10">
